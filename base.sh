@@ -129,7 +129,6 @@ get_path() {
 
 # 获取信息
 get_info() {
-
   case $1 in
   system | os)
     if (uname -s | grep -i -q "darwin"); then
@@ -202,7 +201,6 @@ set_mirror() {
   if (uname -s | grep -i -q "darwin"); then
     sed_text "/^export KENOTE_BASH_MIRROR/d" ~/.zshrc
     echo "export KENOTE_BASH_MIRROR=$1" >> ~/.zshrc
-    source ~/.zshrc
   else
     sed_text "/^export KENOTE_BASH_MIRROR/d" ~/.bashrc
     echo "export KENOTE_BASH_MIRROR=$1" >> ~/.bashrc
