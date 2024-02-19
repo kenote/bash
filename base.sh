@@ -131,7 +131,7 @@ get_path() {
 get_info() {
 
   case $1 in
-  system)
+  system | os)
     if (uname -s | grep -i -q "darwin"); then
       system_profiler SPSoftwareDataType | grep "System Version" | awk -F ": " '{print $2}'
     else
@@ -183,7 +183,31 @@ get_info() {
       fdisk -l | grep -E "(Disk|磁盘) /dev/(s|v)d" | sed -E 's/\:|：|,|，/ /g' | awk -F ' ' '{print $5}' | awk '{sum+=$1} END {print sum/1024/1024/1024, "GB"}'
     fi
   ;;
+  ip)
+    if (uname -s | grep -i -q "darwin"); then
+      ifconfig | grep "inet " | awk -F " " '{print $2}' | grep -vE "\.1$" | tr '\n' ' ' && echo
+    else
+      ifconfig | grep "inet " | awk -F " " '{print $2}' | grep -vE "\.1$" | sed ':a;N;s/\n/ /g;ta'
+    fi
+  ;;
   esac
+}
+
+# 设置源
+set_mirror() {
+  if [[ ! -n $1 ]]; then
+    echo $KENOTE_BASH_MIRROR
+    return
+  fi
+  if (uname -s | grep -i -q "darwin"); then
+    sed_text "/^export KENOTE_BASH_MIRROR/d" ~/.zshrc
+    echo "export KENOTE_BASH_MIRROR=$1" >> ~/.zshrc
+    source ~/.zshrc
+  else
+    sed_text "/^export KENOTE_BASH_MIRROR/d" ~/.bashrc
+    echo "export KENOTE_BASH_MIRROR=$1" >> ~/.bashrc
+    source ~/.bashrc
+  fi
 }
 
 # 运行
@@ -208,6 +232,9 @@ case $1 in
 ;;
 --info)
   get_info "${@:2}"
+;;
+--mirror)
+  set_mirror "${@:2}"
 ;;
 *)
   get_env
