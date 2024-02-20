@@ -1,4 +1,6 @@
 #! /bin/bash
+KENOTE_BATH_TITLE=Kenote脚本工具
+KENOTE_BATH_VERSION=1.0
 
 install_mac() {
   if (arch | grep -i -q "arm64"); then
@@ -189,6 +191,27 @@ get_info() {
       ifconfig | grep "inet " | awk -F " " '{print $2}' | grep -vE "\.1$" | sed ':a;N;s/\n/ /g;ta'
     fi
   ;;
+  date)
+    if (uname -s | grep -i -q "darwin"); then
+      date
+    else
+      timedatectl | grep "Local time" | sed -E 's/^(\s+)(Local\stime)\:\s//'
+    fi
+  ;;
+  utc)
+    if (uname -s | grep -i -q "darwin"); then
+      date -u
+    else
+      timedatectl | grep "Universal time" | sed -E 's/^(\s+)(Universal\stime)\:\s//'
+    fi
+  ;;
+  hostname)
+    if (uname -s | grep -i -q "darwin"); then
+      hostname
+    else
+      echo $(hostname) $(hostname -f)
+    fi
+  ;;
   esac
 }
 
@@ -205,6 +228,44 @@ set_mirror() {
     sed_text "/^export KENOTE_BASH_MIRROR/d" ~/.bashrc
     echo "export KENOTE_BASH_MIRROR=$1" >> ~/.bashrc
     source ~/.bashrc
+  fi
+}
+
+# 初始化
+init_sys() {
+  if (uname -s | grep -i -q "darwin"); then
+    if !(command -v brew &> /dev/null); then
+      install_brew
+    fi
+    install git subversion python3 jq bc unzip wget htop
+  else
+    if (cat /etc/os-release | grep -q -E -i "debian"); then
+      CODENAME=`cat /etc/os-release | grep "VERSION_CODENAME" | sed 's/\(.*\)=\(.*\)/\2/g'`
+      if !(cat /etc/apt/sources.list | grep -q -E "^deb\shttp://deb.debian.org/debian"); then
+        echo -e "deb http://deb.debian.org/debian ${CODENAME}-backports main contrib non-free" >> /etc/apt/sources.list
+      fi
+      if !(cat /etc/apt/sources.list | grep -q -E "^deb\-src\shttp://deb.debian.org/debian"); then
+        echo -e "deb-src http://deb.debian.org/debian ${CODENAME}-backports main contrib non-free" >> /etc/apt/sources.list
+      fi
+    fi
+    if !(command -v ifconfig &> /dev/null); then
+      install net-tools
+    fi
+    install sudo git subversion python3 jq bc tar unzip wget htop
+  fi
+  if [[ ! -f ~/.kenote_profile ]]; then
+    touch ~/.kenote_profile
+  fi
+  set_env KENOTE_BATH_TITLE $KENOTE_BATH_TITLE
+  set_env KENOTE_BATH_VERSION $KENOTE_BATH_VERSION
+}
+
+# 安装Homebrew
+install_brew() {
+  if (curl --connect-timeout 5 https://www.google.com -s --head | head -n 1 | grep "HTTP/[123].." &> /dev/null); then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  else
+    /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"
   fi
 }
 
@@ -229,12 +290,81 @@ case $1 in
   get_path "${@:2}"
 ;;
 --info)
-  get_info "${@:2}"
+  if [[ -n $2 ]]; then
+    get_info "${@:2}"
+  else
+    echo "系统信息"
+    echo "--------------------------------------------------"
+    echo "发行版本: " $(get_info os)
+    echo "内核版本: " $(get_info kernel)
+    echo "硬件架构: " $(arch)
+    echo "--------------------------------------------------"
+    echo "CPU 型号: " $(get_info cpu)
+    echo "CPU 个数: " $(get_info thread)
+    echo "CPU 核心: " $(get_info core)
+    if [[ -n $(get_info speed) ]]; then
+      echo "CPU 频率: " $(get_info speed)
+    fi
+    echo "--------------------------------------------------"
+    echo "内存大小: " $(get_info memory)
+    if !(uname -s | grep -i -q "darwin"); then
+      if [ $(free -b | awk 'NR==3{printf $2}') -gt 0 ]; then
+        echo "虚拟内存: " $(free -b | awk 'NR==3{printf "%.f MB/%.f MB (%.2f%%)", $3/1024/1024, $2/1024/1024, $3*100/$2}')
+      fi
+    fi
+    echo "磁盘大小: " $(get_info disk)
+    echo "--------------------------------------------------"
+    echo "主机名称: " $(get_info hostname)
+    if !(uname -s | grep -i -q "darwin"); then
+      echo "系统时区: " $(timedatectl | grep "Time zone" | sed -E 's/^(\s+)(Time\szone)\:\s//')
+    fi
+    echo "系统时间: " $(get_info date)
+    echo "UTC 时间: " $(get_info utc)
+    echo "--------------------------------------------------"
+    if !(uname -s | grep -i -q "darwin"); then
+      echo "运行时长: " $(cat /proc/uptime | awk -F. '{run_days=int($1 / 86400);run_hours=int(($1 % 86400) / 3600);run_minutes=int(($1 % 3600) / 60); if (run_days > 0) printf("%d天 ", run_days); if (run_hours > 0) printf("%d时 ", run_hours); printf("%d分\n", run_minutes)}')
+      echo "流量统计: " $(awk 'BEGIN { rx_total = 0; tx_total = 0 }
+        NR > 2 { rx_total += $2; tx_total += $10 }
+        END {
+          rx_units = "Bytes";
+          tx_units = "Bytes";
+          if (rx_total > 1024) { rx_total /= 1024; rx_units = "KB"; }
+          if (rx_total > 1024) { rx_total /= 1024; rx_units = "MB"; }
+          if (rx_total > 1024) { rx_total /= 1024; rx_units = "GB"; }
+
+          if (tx_total > 1024) { tx_total /= 1024; tx_units = "KB"; }
+          if (tx_total > 1024) { tx_total /= 1024; tx_units = "MB"; }
+          if (tx_total > 1024) { tx_total /= 1024; tx_units = "GB"; }
+
+          printf("总接收: %.2f %s\n总发送: %.2f %s\n", rx_total, rx_units, tx_total, tx_units);
+        }' /proc/net/dev)
+      echo "--------------------------------------------------"
+  
+    fi
+    echo "运 营 商: " $(curl -s ipinfo.io/org)
+    echo "所在地区: " $(curl -s ipinfo.io/country)
+    echo "所在城镇: " $(curl -s ipinfo.io/city)
+    echo "--------------------------------------------------"
+    echo "公 网 IP: " $(curl -s ipv4.ip.sb)
+    echo "内 网 IP: " $(get_info ip)
+    if [[ -n $(curl -s --max-time 2 ipv6.ip.sb) ]]; then
+      echo "IPV6地址: " $(curl -s --max-time 2 ipv6.ip.sb)
+    fi
+    if (command -v getenforce &> /dev/null); then
+      echo "SELINUX : " $(getenforce)
+    fi
+    echo
+  fi
 ;;
 --mirror)
   set_mirror "${@:2}"
 ;;
+--init)
+  init_sys
+;;
 *)
-  get_env
+  echo "KENOTE_BATH_TITLE=$KENOTE_BATH_TITLE"
+  echo "KENOTE_BATH_VERSION=$KENOTE_BATH_VERSION"
+  echo "KENOTE_BASH_MIRROR=$KENOTE_BASH_MIRROR"
 ;;
 esac
