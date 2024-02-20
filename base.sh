@@ -231,9 +231,29 @@ set_mirror() {
   fi
 }
 
+# 设置热键
+set_hotkey() {
+  if [[ ! -n $1 ]]; then
+    echo "Hotkey = $(alias | grep 'kenote/start.sh' | awk -F "=" '{print $1}' | awk -F " " '{print $2}')"
+    return
+  fi
+  line=`cat ~/.bashrc | grep -n "^alias" | awk -F ":" '{print $1}' | tail -n 1`
+  if (cat ~/.bashrc | grep -q "kenote/start.sh"); then
+    sed -i "s/.*kenote\/start\.sh.*/alias $1='~\/kenote\/start\.sh'/" ~/.bashrc
+  else
+    if [[ -n $line ]]; then
+      sed -i "$((line+1)) i alias $1='~/kenote/start.sh'" ~/.bashrc
+    else
+      echo -e "alias $1='~/kenote/start.sh'" >> ~/.bashrc
+    fi
+  fi
+  source ~/.bashrc
+}
+
 # 初始化
 init_sys() {
   if (uname -s | grep -i -q "darwin"); then
+    env /usr/bin/arch -arm64 /bin/zsh ---login
     if !(command -v brew &> /dev/null); then
       install_brew
     fi
@@ -252,6 +272,14 @@ init_sys() {
       install net-tools
     fi
     install sudo git subversion python3 jq bc tar unzip wget htop
+  fi
+  mkdir -p ~/kenote
+  if [[ ! -f ~/kenote/start.sh ]]; then
+    if [[ ! -n $KENOTE_BASH_MIRROR ]]; then
+      KENOTE_BASH_MIRROR=https://raw.githubusercontent.com/kenote/bash/main
+    fi
+    wget -O ~/kenote/start.sh $KENOTE_BASH_MIRROR/start.sh
+    chmod +x ~/kenote/start.sh
   fi
   if [[ ! -f ~/.kenote_profile ]]; then
     touch ~/.kenote_profile
@@ -361,6 +389,9 @@ case $1 in
 ;;
 --init)
   init_sys
+;;
+--hotkey)
+  set_hotkey "${@:2}"
 ;;
 *)
   echo "KENOTE_BATH_TITLE=$KENOTE_BATH_TITLE"
