@@ -234,7 +234,7 @@ set_mirror() {
 # 设置热键
 set_hotkey() {
   if [[ ! -n $1 ]]; then
-    echo "Hotkey = $(alias | grep 'kenote/start.sh' | awk -F "=" '{print $1}' | awk -F " " '{print $2}')"
+    echo "Hotkey = $(cat ~/.bashrc | grep 'kenote/start.sh' | awk -F "=" '{print $1}' | awk -F " " '{print $2}')"
     return
   fi
   line=`cat ~/.bashrc | grep -n "^alias" | awk -F ":" '{print $1}' | tail -n 1`
