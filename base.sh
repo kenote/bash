@@ -1,6 +1,7 @@
 #! /bin/bash
-KENOTE_BATH_TITLE=Kenote脚本工具
-KENOTE_BATH_VERSION=1.0
+KENOTE_BATH_TITLE=Bash脚本工具
+KENOTE_BATH_VERSION=v1.0
+KENOTE_PACK_MIRROR=https://ams.vps.kenote.site/share/linux/packages
 
 install_mac() {
   if (arch | grep -i -q "arm64"); then
@@ -36,6 +37,7 @@ remove_linux() {
   fi
 }
 
+# 兼容macos sed -i 指令
 sed_text() {
   if (uname -s | grep -i -q "darwin"); then
     sed -i "" "$1" $2
@@ -227,7 +229,7 @@ set_mirror() {
   else
     sed_text "/^export KENOTE_BASH_MIRROR/d" ~/.bashrc
     echo "export KENOTE_BASH_MIRROR=$1" >> ~/.bashrc
-    source ~/.bashrc
+    source ~/.bash_profile
   fi
 }
 
@@ -247,7 +249,7 @@ set_hotkey() {
       echo -e "alias $1='~/kenote/start.sh'" >> ~/.bashrc
     fi
   fi
-  source ~/.bashrc
+  source ~/.bash_profile
 }
 
 # 初始化
@@ -274,18 +276,18 @@ init_sys() {
     install sudo git subversion python3 jq bc tar unzip wget htop
   fi
   mkdir -p ~/kenote
-  if [[ ! -f ~/kenote/start.sh ]]; then
-    if [[ ! -n $KENOTE_BASH_MIRROR ]]; then
-      KENOTE_BASH_MIRROR=https://raw.githubusercontent.com/kenote/bash/main
-    fi
-    wget -O ~/kenote/start.sh $KENOTE_BASH_MIRROR/start.sh
-    chmod +x ~/kenote/start.sh
+  if [[ ! -n $KENOTE_BASH_MIRROR ]]; then
+    KENOTE_BASH_MIRROR=https://raw.githubusercontent.com/kenote/bash/main
   fi
+  wget -O ~/kenote/core.sh $KENOTE_BASH_MIRROR/core.sh
+  wget -O ~/kenote/start.sh $KENOTE_BASH_MIRROR/start.sh
+  chmod +x ~/kenote/start.sh
   if [[ ! -f ~/.kenote_profile ]]; then
     touch ~/.kenote_profile
   fi
   set_env KENOTE_BATH_TITLE $KENOTE_BATH_TITLE
   set_env KENOTE_BATH_VERSION $KENOTE_BATH_VERSION
+  set_env KENOTE_PACK_MIRROR $KENOTE_PACK_MIRROR
 }
 
 # 安装Homebrew
@@ -388,7 +390,15 @@ case $1 in
   set_mirror "${@:2}"
 ;;
 --init)
-  init_sys
+  case $2 in
+  ssh)
+    wget -O ~/kenote/ssh.sh $KENOTE_BASH_MIRROR/ssh.sh
+    chmod +x ~/kenote/ssh.sh
+  ;;
+  *)
+    init_sys
+  ;;
+  esac
 ;;
 --hotkey)
   set_hotkey "${@:2}"
