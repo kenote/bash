@@ -35,3 +35,9 @@ curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --init
 ```bash
 ~/kenote/start.sh
 ```
+
+设置热键
+```bash
+curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --hotkey "kn"; \
+if (echo $SHELL | grep -q "zsh");then source ~/.zshrc; else source ~/.bash_profile; fi
+```
