@@ -1,21 +1,18 @@
 #! /bin/bash
-source core.sh
+source $(cd $(dirname $0);pwd)/core.sh
 
 # 主菜单
 show_menu() {
-  
   if (uname -s | grep -i -q "darwin"); then
     mac_menu $1
   else
     linux_menu $1
   fi
-  
 }
 
 # macos菜单
 mac_menu() {
   show_title
-  curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --hotkey
   echo "------------------------"
   echo "1. 系统信息"
   echo "2. 进程监控"
