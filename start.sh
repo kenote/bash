@@ -77,7 +77,6 @@ linux_menu() {
   echo "15. 应用中心 >"
   echo "------------------------"
   echo "00. 脚本更新"
-  echo "01. 设置热键"
   echo "------------------------"
   echo "0. 退出脚本"
   echo "------------------------"
@@ -108,34 +107,6 @@ linux_menu() {
     rm -rf ~/kenote/*
     curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --init
     ~/kenote/start.sh
-  ;;
-  01)
-    clear
-    sub_title="设置热键\n------------------------"
-    echo -e $sub_title
-    while read -p "启动热键: "  hotkey
-    do
-      goback $hotkey "clear;show_menu"
-      if [[ ! -n $hotkey ]]; then
-        warning "启动热键不能为空！" "$sub_title"
-        continue
-      fi
-      if [[ ! -n $(echo $hotkey | gawk '/^[a-z]{1}[a-z0-9]{0,1}$/{print $0}') ]]; then
-        warning "热键为1～2位字符，必须以英文字符开头！" "$sub_title"
-        continue
-      fi
-      break
-    done
-    sub_title="$sub_title\n启动热键: $hotkey"
-    clear
-    echo -e $sub_title
-    curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --hotkey "$hotkey"
-    echo
-    echo -e "- ${yellow}热键设置完毕！${plain}"
-    echo
-    read -n1  -p "按任意键继续" key
-    clear
-    show_menu
   ;;
   0)
     clear

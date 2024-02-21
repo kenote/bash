@@ -223,33 +223,29 @@ set_mirror() {
     echo $KENOTE_BASH_MIRROR
     return
   fi
-  if (uname -s | grep -i -q "darwin"); then
-    sed_text "/^export KENOTE_BASH_MIRROR/d" ~/.zshrc
-    echo "export KENOTE_BASH_MIRROR=$1" >> ~/.zshrc
-  else
-    sed_text "/^export KENOTE_BASH_MIRROR/d" ~/.bashrc
-    echo "export KENOTE_BASH_MIRROR=$1" >> ~/.bashrc
-    source ~/.bash_profile
-  fi
+  export KENOTE_BASH_MIRROR=$1
 }
 
 # 设置热键
 set_hotkey() {
+  BASHFILE=~/.bashrc
+  if (echo $SHELL | grep -q "zsh"); then
+    BASHFILE=~/.zshrc
+  fi
   if [[ ! -n $1 ]]; then
-    echo "Hotkey = $(cat ~/.bashrc | grep 'kenote/start.sh' | awk -F "=" '{print $1}' | awk -F " " '{print $2}')"
+    echo "Hotkey = $(cat $BASHFILE | grep 'kenote/start.sh' | awk -F "=" '{print $1}' | awk -F " " '{print $2}')"
     return
   fi
-  line=`cat ~/.bashrc | grep -n "^alias" | awk -F ":" '{print $1}' | tail -n 1`
-  if (cat ~/.bashrc | grep -q "kenote/start.sh"); then
-    sed -i "s/.*kenote\/start\.sh.*/alias $1='~\/kenote\/start\.sh'/" ~/.bashrc
+  line=`cat $BASHFILE | grep -n "^alias" | awk -F ":" '{print $1}' | tail -n 1`
+  if (cat $BASHFILE | grep -q "kenote/start.sh"); then
+    sed -i "s/.*kenote\/start\.sh.*/alias $1='~\/kenote\/start\.sh'/" $BASHFILE
   else
     if [[ -n $line ]]; then
-      sed -i "$((line+1)) i alias $1='~/kenote/start.sh'" ~/.bashrc
+      sed -i "$((line+1)) i alias $1='~/kenote/start.sh'" $BASHFILE
     else
-      echo -e "alias $1='~/kenote/start.sh'" >> ~/.bashrc
+      echo -e "alias $1='~/kenote/start.sh'" >> $BASHFILE
     fi
   fi
-  source ~/.bash_profile
 }
 
 # 初始化

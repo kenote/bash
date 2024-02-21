@@ -13,13 +13,15 @@ Bash脚本工具 v.1.0
 Github
 ```bash
 curl -Lso- https://raw.githubusercontent.com/kenote/bash/main/base.sh | bash -s -- --mirror https://raw.githubusercontent.com/kenote/bash/main
-echo $SHELL | grep -q "zsh" && source ~/.zshrc
+# 或
+export KENOTE_BASH_MIRROR=https://raw.githubusercontent.com/kenote/bash/main
 ```
 
 Gitee
 ```bash
 curl -Lso- https://gitee.com/kenote/bash/raw/main/base.sh | bash -s -- --mirror https://gitee.com/kenote/bash/raw/main
-echo $SHELL | grep -q "zsh" && source ~/.zshrc
+# 或
+export KENOTE_BASH_MIRROR=https://gitee.com/kenote/bash/raw/main
 ```
 
 ## Install 安装
