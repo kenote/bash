@@ -3,6 +3,10 @@ KENOTE_BATH_TITLE=Bash脚本工具
 KENOTE_BATH_VERSION=v1.0
 KENOTE_PACK_MIRROR=https://ams.vps.kenote.site/share/linux/packages
 
+sed -i "s/^KENOTE_PACK_MIRROR.*/KENOTE_PACK_MIRROR=https://ams.vps.kenote.site/share/linux/packages/" ~/.kenote_profile
+
+echo "https://ams.vps.kenote.site/share/linux/packages" | sed 's/\//\\\//g'
+
 install_mac() {
   if (arch | grep -i -q "arm64"); then
     arch -arm64 brew install $1
@@ -104,7 +108,7 @@ set_env() {
     touch ~/.kenote_profile
   fi
   if (cat ~/.kenote_profile | grep -q -E "^$1"); then
-    sed_text "s/^$1.*/$1=$2/" ~/.kenote_profile
+    sed_text "s/^$1.*/$1=$(echo "$2" | sed 's/\//\\\//g')/" ~/.kenote_profile
   else
     echo "$1=$2" >> ~/.kenote_profile
   fi
