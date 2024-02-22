@@ -52,9 +52,14 @@ case $1 in
 --cron)
   # 添加计划任务
   crontab -l | grep -v "$CURRENT_DIR/kenote.sh" | crontab -
-  random_minute=`expr $RANDOM % 59 + 1`;
-  random_hour=`expr $RANDOM % 23 + 1`;
-  echo "$random_minute $random_hour * * * $CURRENT_DIR/kenote.sh --update" | crontab -
+  if [[ -n $2 ]]; then
+    (crontab -l;echo "$2 $CURRENT_DIR/kenote.sh --update") | crontab -
+  else
+    random_minute=`expr $RANDOM % 59 + 1`;
+    random_hour=`expr $RANDOM % 23 + 1`;
+    (crontab -l;echo "$random_minute $random_hour * * * $CURRENT_DIR/kenote.sh --update") | crontab -
+  fi
+  crontab -l
 ;;
 --update)
   # 更新 kenote/bash
