@@ -3,6 +3,8 @@ KENOTE_BATH_TITLE=Bash脚本工具
 KENOTE_BATH_VERSION=v1.0
 KENOTE_PACK_MIRROR=https://ams.vps.kenote.site/share/linux/packages
 
+PKGTABS="subversion |svn|"
+
 install_mac() {
   if (arch | grep -i -q "arm64"); then
     arch -arm64 brew install $1
@@ -46,6 +48,15 @@ sed_text() {
   fi
 }
 
+# 获取软件包名称
+get_pkgname() {
+  if [[ -n $(echo -e "$PKGTABS" | grep -E "\|$1\|") ]]; then
+    echo -e "$PKGTABS" | grep -E "\|$1\|" | awk -F " " '{print $1}'
+  else
+    echo "$1"
+  fi
+}
+
 # 安装软件包
 install() {
   if [ $# -eq 0 ]; then
@@ -56,9 +67,9 @@ install() {
   do
     if !(command -v $package &> /dev/null); then
       if (uname -s | grep -i -q "darwin"); then
-        install_mac $package
+        install_mac "$(get_pkgname "$package")"
       else
-        install_linux $package
+        install_linux "$(get_pkgname "$package")"
       fi
     fi
   done
@@ -75,9 +86,9 @@ remove() {
   do
     if !(command -v $package &> /dev/null); then
       if (uname -s | grep -i -q "darwin"); then
-        brew remove $package
+        brew remove "$(get_pkgname "$package")"
       else
-        remove_linux $package
+        remove_linux "$(get_pkgname "$package")"
       fi
     fi
   done
@@ -269,7 +280,7 @@ init_sys() {
     if !(command -v ifconfig &> /dev/null); then
       install net-tools
     fi
-    install sudo git subversion python3 jq bc tar unzip wget htop
+    install sudo git svn python3 jq bc tar unzip wget htop
   fi
   mkdir -p ~/kenote
   if [[ ! -n $KENOTE_BASH_MIRROR ]]; then
