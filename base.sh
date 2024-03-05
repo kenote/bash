@@ -388,6 +388,10 @@ case $1 in
 --init)
   case $2 in
   ssh)
+    mkdir -p ~/kenote/ssh
+    wget -O ~/kenote/ssh/init.sh $KENOTE_BASH_MIRROR/ssh/init.sh
+    wget -O ~/kenote/ssh/server.sh $KENOTE_BASH_MIRROR/ssh/server.sh
+    wget -O ~/kenote/ssh/task.sh $KENOTE_BASH_MIRROR/ssh/task.sh
     wget -O ~/kenote/ssh.sh $KENOTE_BASH_MIRROR/ssh.sh
     chmod +x ~/kenote/ssh.sh
   ;;

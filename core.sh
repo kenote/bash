@@ -22,6 +22,15 @@ sed_text() {
   fi
 }
 
+# 解析路径
+parse_path() {
+  if [[ -n $(echo $1 | gawk '/^([a-zA-Z0-9\.\-_])/{print 0}') ]]; then
+    echo "$CURRENT_DIR/$1"
+  else
+    eval echo "$1"
+  fi
+}
+
 # 运行脚本
 run_script() {
   filepath=`curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --get-path $CURRENT_DIR $1`
@@ -120,4 +129,19 @@ install_btop() {
     make install PREFIX=/usr/local/btop
     ln -s /usr/local/btop/bin/btop /usr/bin/btop
   fi
+}
+
+# 判断IP地址合法性
+is_ipadress() {
+  echo "$1" | gawk '/^((2(5[0-5]|[0-4][0-9]))|[0-1]?[0-9]{1,2})(\.((2(5[0-5]|[0-4][0-9]))|[0-1]?[0-9]{1,2})){3}$/{print $0}'
+}
+
+# 判断域名合法性
+is_domain() {
+  echo "$1" | gawk '/^[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$/{print $0}'
+}
+
+# 判断端口
+is_port() {
+  echo "$1" | gawk '/^[1-9]{1}[0-9]{1,5}$/{print $0}'
 }
