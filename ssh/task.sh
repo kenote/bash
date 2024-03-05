@@ -156,7 +156,7 @@ task_options() {
     fi
     del_task "$1"
     clear
-    show_menu $2
+    show_menu "" $2
   ;;
   2)
     clear
@@ -172,7 +172,7 @@ task_options() {
       echo
       read -n1 -p "按任意键继续" 
       clear
-      show_menu $2
+      show_menu "" $2
     fi
   ;;
   0)
