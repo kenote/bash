@@ -266,7 +266,7 @@ init_sys() {
     if !(command -v brew &> /dev/null); then
       install_brew
     fi
-    install git subversion python3 jq bc unzip wget htop
+    install git svn python3 jq bc unzip wget htop
   else
     if (cat /etc/os-release | grep -q -E -i "debian"); then
       CODENAME=`cat /etc/os-release | grep "VERSION_CODENAME" | sed 's/\(.*\)=\(.*\)/\2/g'`
