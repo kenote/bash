@@ -106,6 +106,10 @@ linux_menu() {
     clear
     show_menu
   ;;
+
+  13)
+    run_script ssh.sh
+  ;;
   00)
     rm -rf ~/kenote/*
     curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --init
