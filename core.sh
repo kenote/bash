@@ -48,11 +48,11 @@ goback() {
   # 按 #1 返回
   if [[ -n $(echo $1 | grep -iE "^\#1$") ]]; then
     eval "$2"
-    break
+    exit
   # 按 #2 刷新
   elif [[ -n $(echo $1 | grep -iE "^\#2$") ]]; then
     eval "$3"
-    break
+    exit
   # 按 #0 退出
   elif [[ -n $(echo $1 | grep -iE "^\#0$") ]]; then
     clear
@@ -144,4 +144,21 @@ is_domain() {
 # 判断端口
 is_port() {
   echo "$1" | gawk '/^[1-9]{1}[0-9]{1,5}$/{print $0}'
+}
+
+# 转换磁盘大小
+to_size() {
+  if [[ ! -n $(echo "$1" | gawk '/^[1-9]{1}[0-9]+?/{print $0}') ]]; then
+    echo "--"
+    return
+  fi
+  if [[ 1024 -gt $1 ]]; then
+    echo "$1 Bytes"
+  elif [[ 1028576 -gt $1 ]]; then
+    echo "scale=2;print $1/1024" | bc && echo "KB"
+  elif [[ 1073741824 -gt $1 ]]; then
+    echo "scale=2;print $1/1024/1024" | bc && echo "MB"
+  elif [[ 1073741824 -le $1 ]]; then
+    echo "scale=2;print $1/1024/1024/1024" | bc && echo "GB"
+  fi
 }

@@ -1,7 +1,7 @@
 #! /bin/bash
 KENOTE_BATH_TITLE=Bash脚本工具
 KENOTE_BATH_VERSION=v1.0
-KENOTE_PACK_MIRROR=https://ams.vps.kenote.site/share/linux/packages
+KENOTE_PACK_MIRROR=https://mirrors.kenote.site/packages
 
 PKGTABS="subversion |svn|"
 
@@ -234,7 +234,13 @@ set_mirror() {
     echo $KENOTE_BASH_MIRROR
     return
   fi
-  export KENOTE_BASH_MIRROR=$1
+  if (uname -s | grep -i -q "darwin"); then
+    sed_text "/^export KENOTE_BASH_MIRROR/d" ~/.zshrc
+    echo "export KENOTE_BASH_MIRROR=$1" >> ~/.zshrc
+  else
+    sed_text "/^export KENOTE_BASH_MIRROR/d" ~/.bashrc
+    echo "export KENOTE_BASH_MIRROR=$1" >> ~/.bashrc
+  fi
 }
 
 # 设置热键

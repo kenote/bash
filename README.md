@@ -12,16 +12,14 @@ Bash脚本工具 v.1.0
 
 Github
 ```bash
-curl -Lso- https://raw.githubusercontent.com/kenote/bash/main/base.sh | bash -s -- --mirror https://raw.githubusercontent.com/kenote/bash/main
-# 或
-export KENOTE_BASH_MIRROR=https://raw.githubusercontent.com/kenote/bash/main
+curl -Lso- https://raw.githubusercontent.com/kenote/bash/main/base.sh | bash -s -- --mirror https://raw.githubusercontent.com/kenote/bash/main; \
+if (echo $SHELL | grep -q "zsh");then source ~/.zshrc; else source ~/.bash_profile; fi
 ```
 
 Gitee
 ```bash
-curl -Lso- https://gitee.com/kenote/bash/raw/main/base.sh | bash -s -- --mirror https://gitee.com/kenote/bash/raw/main
-# 或
-export KENOTE_BASH_MIRROR=https://gitee.com/kenote/bash/raw/main
+curl -Lso- https://gitee.com/kenote/bash/raw/main/base.sh | bash -s -- --mirror https://gitee.com/kenote/bash/raw/main; \
+if (echo $SHELL | grep -q "zsh");then source ~/.zshrc; else source ~/.bash_profile; fi
 ```
 
 ## Install 安装
@@ -46,7 +44,7 @@ if (echo $SHELL | grep -q "zsh");then source ~/.zshrc; else source ~/.bash_profi
 
 拉取 Github; 默认 `/mnt/mirrors`, 也可以通过 `--install /home/mirrors` 指定
 ```bash
-curl -Lso- https://raw.githubusercontent.com/kenote/bash/main/base.sh | bash -s -- --install
+curl -Lso- https://raw.githubusercontent.com/kenote/bash/main/kenote.sh | bash -s -- --install
 ```
 
 Nginx 设置
