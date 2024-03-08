@@ -3,7 +3,7 @@ KENOTE_BATH_TITLE=Bash脚本工具
 KENOTE_BATH_VERSION=v1.0
 KENOTE_PACK_MIRROR=https://mirrors.kenote.site/packages
 
-PKGTABS="subversion |svn|"
+PKGTABS="subversion |svn|\nxfsprogs |xfs_growfs|"
 
 install_mac() {
   if (arch | grep -i -q "arm64"); then
@@ -411,6 +411,13 @@ case $1 in
     wget -O ~/kenote/ssh/task.sh $KENOTE_BASH_MIRROR/ssh/task.sh
     wget -O ~/kenote/ssh.sh $KENOTE_BASH_MIRROR/ssh.sh
     chmod +x ~/kenote/ssh.sh
+  ;;
+  disk)
+    mkdir -p ~/kenote/disk
+    wget -O ~/kenote/disk/base.sh $KENOTE_BASH_MIRROR/disk/base.sh
+    wget -O ~/kenote/disk/swap.sh $KENOTE_BASH_MIRROR/disk/swap.sh
+    wget -O ~/kenote/disk.sh $KENOTE_BASH_MIRROR/disk.sh
+    chmod +x ~/kenote/disk.sh
   ;;
   *)
     init_sys
