@@ -7,6 +7,9 @@ KENOTE_BATH_TITLE=$(curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --env KE
 KENOTE_BATH_VERSION=$(curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --env KENOTE_BATH_VERSION)
 KENOTE_PACK_MIRROR=$(curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --env KENOTE_PACK_MIRROR)
 KENOTE_SSH_PATH=$(curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --env KENOTE_SSH_PATH)
+KENOTE_ACMECTL=$(curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --env KENOTE_ACMECTL)
+KENOTE_SSL_PATH=$(curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --env KENOTE_SSL_PATH)
+KENOTE_NGINX_HOME=$(curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --env KENOTE_NGINX_HOME)
 
 red='\033[0;31m'
 green='\033[0;32m'
@@ -141,9 +144,25 @@ is_domain() {
   echo "$1" | gawk '/^[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$/{print $0}'
 }
 
+# 判断多个参数
+is_param_true() {
+  list=($2)
+  for name in "${list[@]}"
+  do
+    if [[ ! -n $(eval "$1" "$name") ]]; then
+      return 1
+    fi
+  done
+}
+
 # 判断端口
 is_port() {
   echo "$1" | gawk '/^[1-9]{1}[0-9]{1,5}$/{print $0}'
+}
+
+# 判断电子邮箱
+is_email() {
+  echo "$1" | gawk '/^([a-zA-Z0-9_\-\.\+]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/{print $0}'
 }
 
 # 转换磁盘大小

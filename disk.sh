@@ -167,7 +167,7 @@ show_menu() {
     fi
     while read -p "交换分区大小(单位: Mb): " size
     do
-      goback $sizesize "clear;show_menu"
+      goback $size "clear;show_menu"
       if [[ ! -n $size ]]; then
         show_menu "" 4 "请填写交换分区大小"
         continue
