@@ -429,6 +429,12 @@ case $1 in
     wget -O ~/kenote/disk.sh $KENOTE_BASH_MIRROR/disk.sh
     chmod +x ~/kenote/disk.sh
   ;;
+  cert)
+    mkdir -p ~/kenote/cert
+    wget -O ~/kenote/cert/acme.sh $KENOTE_BASH_MIRROR/cert/acme.sh
+    wget -O ~/kenote/cert.sh $KENOTE_BASH_MIRROR/cert.sh
+    chmod +x ~/kenote/cert.sh
+  ;;
   *)
     init_sys
   ;;

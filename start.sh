@@ -69,13 +69,13 @@ linux_menu() {
   echo "1. 系统信息"
   echo "2. 进程监控"
   echo "3. 磁盘管理 >"
-  # echo "4. 证书管理 >"
   # echo "5. 探针测试 >"
   # echo "6. 用户管理 >"
   echo "------------------------"
   # echo "11. Docker管理 >"
   # echo "12. Nginx管理 >"
   echo "13. 服务器管理 >"
+  echo "14. 证书管理 >"
   # echo "14. 防火墙 >"
   # echo "15. 应用中心 >"
   echo "------------------------"
@@ -113,6 +113,9 @@ linux_menu() {
   13)
     run_script ssh.sh
   ;;
+  14)
+    run_script cert.sh
+  ;;
   00)
     rm -rf ~/kenote/*
     curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --init
@@ -140,6 +143,13 @@ case "$1" in
 ;;
 --ssh)
   run_script ssh.sh
+;;
+--cert)
+  if (uname -s | grep -i -q "darwin"); then
+    clear && show_menu
+  else
+    run_script cert.sh
+  fi
 ;;
 *)
   clear
