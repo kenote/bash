@@ -155,6 +155,17 @@ is_param_true() {
   done
 }
 
+# 转换数组参数
+to_array_param() {
+  list=($2)
+  param=""
+  for name in "${list[@]}"
+  do
+    param="$param $1 $name"
+  done
+  echo $param
+}
+
 # 判断端口
 is_port() {
   echo "$1" | gawk '/^[1-9]{1}[0-9]{1,5}$/{print $0}'

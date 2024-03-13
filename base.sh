@@ -7,7 +7,7 @@ KENOTE_ACMECTL=$HOME/.acme.sh/acme.sh
 KENOTE_SSL_PATH=/mnt/ssl
 KENOTE_NGINX_HOME=/mnt/nginx-data
 
-PKGTABS="subversion |svn|\nxfsprogs |xfs_growfs|"
+PKGTABS="subversion |svn|\nxfsprogs |xfs_growfs|\njava-1.8.0-openjdk |keytool|"
 
 install_mac() {
   if (arch | grep -i -q "arm64"); then
