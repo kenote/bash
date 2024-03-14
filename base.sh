@@ -88,7 +88,7 @@ remove() {
   fi
   for package in "$@";
   do
-    if !(command -v $package &> /dev/null); then
+    if (command -v $package &> /dev/null); then
       if (uname -s | grep -i -q "darwin"); then
         brew remove "$(get_pkgname "$package")"
       else
