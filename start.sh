@@ -73,7 +73,7 @@ linux_menu() {
   # echo "6. 用户管理 >"
   echo "------------------------"
   # echo "11. Docker管理 >"
-  # echo "12. Nginx管理 >"
+  echo "12. Nginx管理 >"
   echo "13. 服务器管理 >"
   echo "14. 证书管理 >"
   # echo "14. 防火墙 >"
@@ -110,6 +110,9 @@ linux_menu() {
     run_script disk.sh
   ;;
 
+  12)
+    run_script nginx.sh
+  ;;
   13)
     run_script ssh.sh
   ;;
@@ -117,6 +120,7 @@ linux_menu() {
     run_script cert.sh
   ;;
   00)
+    clear
     rm -rf ~/kenote/*
     curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --init
     ~/kenote/start.sh
@@ -149,6 +153,13 @@ case "$1" in
     clear && show_menu
   else
     run_script cert.sh
+  fi
+;;
+--nginx)
+  if (uname -s | grep -i -q "darwin"); then
+    clear && show_menu
+  else
+    run_script nginx.sh
   fi
 ;;
 *)

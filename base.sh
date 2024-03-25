@@ -435,6 +435,17 @@ case $1 in
     wget -O ~/kenote/cert.sh $KENOTE_BASH_MIRROR/cert.sh
     chmod +x ~/kenote/cert.sh
   ;;
+  nginx)
+    mkdir -p ~/kenote/nginx
+    wget -O ~/kenote/nginx/init.sh $KENOTE_BASH_MIRROR/nginx/init.sh
+    if [[ ! -f ~/kenote/cert/acme.sh ]]; then
+      wget -O ~/kenote/cert/acme.sh $KENOTE_BASH_MIRROR/cert/acme.sh
+    fi
+    wget -O ~/kenote/nginx/server.sh $KENOTE_BASH_MIRROR/nginx/server.sh
+    wget -O ~/kenote/nginx/proxy.sh $KENOTE_BASH_MIRROR/nginx/proxy.sh
+    wget -O ~/kenote/nginx.sh $KENOTE_BASH_MIRROR/nginx.sh
+    chmod +x ~/kenote/nginx.sh
+  ;;
   *)
     init_sys
   ;;

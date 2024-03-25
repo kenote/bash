@@ -68,6 +68,11 @@ warning() {
   if [[ -n $2 ]]; then
     clear
     echo -e $2
+    if [[ -n $3 ]]; then
+      echo
+      eval "$3"
+      echo
+    fi
   fi
   echo -e "${red}$1${plain}"
   echo
@@ -141,15 +146,20 @@ is_ipadress() {
 
 # 判断域名合法性
 is_domain() {
-  echo "$1" | gawk '/^[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$/{print $0}'
+  echo "$1" | gawk '/^[a-zA-Z0-9\*][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$/{print $0}'
+}
+
+# 判断URL
+is_url() {
+  echo "$1" | gawk '/^(http|https):\/\/[^/s]*/{print $0}'
 }
 
 # 判断多个参数
 is_param_true() {
   list=($2)
-  for name in "${list[@]}"
+  for _name in "${list[@]}"
   do
-    if [[ ! -n $(eval "$1" "$name") ]]; then
+    if [[ ! -n $(eval "$1" "$_name") ]]; then
       return 1
     fi
   done
