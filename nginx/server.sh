@@ -87,7 +87,7 @@ create_server() {
     esac
     shift 1
   done
-  file="$CONFDIR/$name"
+  file="$CONFDIR/$name.conf"
   # 创建配置
   echo -e "" > $file
   echo -e "server {" >> $file
@@ -129,33 +129,34 @@ set_ssl_certificate() {
   if !(curl -s -I http://$domain:$port | grep -i "^server:" | grep "1.25" &> /dev/null); then
     http2="http2"
   fi
+  cp $file "$file.http"
   # 添加HTTPS配置
   echo -e "" > $file
   echo -e "server {" >> $file
-  echo -e "    listen $(get_info_node $file listen | sed -n 1p);" >> $file
-  echo -e "    listen [::]:$(get_info_node $file listen | sed -n 1p);" >> $file
-  echo -e "    server_name $(get_info_node $file server_name);" >> $file
-  if [[ -n $(get_info_node $file root) ]]; then
-    echo -e "    root $(get_info_node $file root | sed -n 1p);" >> $file
+  echo -e "    listen $(get_info_node "$file.http" listen | sed -n 1p);" >> $file
+  echo -e "    listen [::]:$(get_info_node "$file.http" listen | sed -n 1p);" >> $file
+  echo -e "    server_name $(get_info_node "$file.http" server_name);" >> $file
+  if [[ -n $(get_info_node "$file.http" root) ]]; then
+    echo -e "    root $(get_info_node "$file.http" root | sed -n 1p);" >> $file
   fi
-  if [[ -n $(get_info_node $file index) ]]; then
-    echo -e "    index $(get_info_node $file index | sed -n 1p);" >> $file
+  if [[ -n $(get_info_node "$file.http" index) ]]; then
+    echo -e "    index $(get_info_node "$file.http" index | sed -n 1p);" >> $file
   fi
   echo -e "    " >> $file
   echo -e "    # 日志" >> $file
-  echo -e "    access_log $(get_info_node $file access_log);" >> $file
-  echo -e "    error_log $(get_info_node $file error_log);" >> $file
+  echo -e "    access_log $(get_info_node "$file.http" access_log);" >> $file
+  echo -e "    error_log $(get_info_node "$file.http" error_log);" >> $file
   echo -e "}" >> $file
   echo -e "" >> $file
   echo -e "server {" >> $file
   echo -e "    listen 443 ssl $http2;" >> $file
   echo -e "    listen [::]:443 ssl $http2;" >> $file
-  echo -e "    server_name $(get_info_node $file server_name);" >> $file
-  if [[ -n $(get_info_node $file root) ]]; then
-    echo -e "    root $(get_info_node $file root | sed -n 1p);" >> $file
+  echo -e "    server_name $(get_info_node "$file.http" server_name);" >> $file
+  if [[ -n $(get_info_node "$file.http" root) ]]; then
+    echo -e "    root $(get_info_node "$file.http" root | sed -n 1p);" >> $file
   fi
-  if [[ -n $(get_info_node $file index) ]]; then
-    echo -e "    index $(get_info_node $file index | sed -n 1p);" >> $file
+  if [[ -n $(get_info_node "$file.http" index) ]]; then
+    echo -e "    index $(get_info_node "$file.http" index | sed -n 1p);" >> $file
   fi
   echo -e "    " >> $file
   if [[ ! -n $http2 ]]; then
@@ -170,11 +171,11 @@ set_ssl_certificate() {
   echo -e "    ssl_session_cache shared:SSL:5m;" >> $file
   echo -e "    ssl_session_timeout 5m;" >> $file
   echo -e "    " >> $file
-  cat $file | grep -E "\s+include\s+" | uniq >> $file
+  cat "$file.http" | grep -E "\s+include\s+" | uniq >> $file
   echo -e "    " >> $file
   echo -e "    # 日志" >> $file
-  echo -e "    access_log $(get_info_node $file access_log);" >> $file
-  echo -e "    error_log $(get_info_node $file error_log);" >> $file
+  echo -e "    access_log $(get_info_node "$file.http" access_log);" >> $file
+  echo -e "    error_log $(get_info_node "$file.http" error_log);" >> $file
   echo -e "}" >> $file
   unset file domain port
 }
@@ -218,12 +219,15 @@ server_options() {
     echo "设置附加参数"
     echo "------------------------"
     echo
-    filename=`ls $WORKDIR/proxy/$(get_name $1) | grep -E "^(\[[0-9]{1,2}\])?setting\.conf(\.bak)?$"`
-    if [[ -n $filename && -f $WORKDIR/proxy/$(get_name $1)/$filename ]]; then
-      vi $WORKDIR/proxy/$(get_name $1)/$filename
-    else
-      set_http_setting --server "$(get_name $1)"
-    fi
+    echo "功能暂停"
+    echo
+    read -n1 -p "按任意键继续" key
+    # filename=`ls $WORKDIR/proxy/$(get_name $1) | grep -E "^(\[[0-9]{1,2}\])?setting\.conf(\.bak)?$"`
+    # if [[ -n $filename && -f $WORKDIR/proxy/$(get_name $1)/$filename ]]; then
+    #   vi $WORKDIR/proxy/$(get_name $1)/$filename
+    # else
+    #   set_http_setting --server "$(get_name $1)"
+    # fi
     clear
     server_options $1 $2
   ;;
