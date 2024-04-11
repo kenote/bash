@@ -58,6 +58,9 @@ init_nginx_conf() {
     if [[ ! -n $(cat $ROOTDIR/nginx.conf | grep "/upstream/\*.conf;") ]]; then
       sed -i "/include \/etc\/nginx\/conf.d\/\*.conf;/a\    include $1/upstream/\*.conf;" $ROOTDIR/nginx.conf
     fi
+    if [[ ! -n $(cat $ROOTDIR/nginx.conf | grep "/upstream/\*.hash;") ]]; then
+      sed -i "/include \/etc\/nginx\/conf.d\/\*.conf;/a\    include $1/upstream/\*.hash;" $ROOTDIR/nginx.conf
+    fi
     # 引入 stream
     if [[ ! -n $(cat $ROOTDIR/nginx.conf | grep "/stream/index.conf;") ]]; then
       sed -i "/http {/i\include $1/stream/index.conf;\n" $ROOTDIR/nginx.conf

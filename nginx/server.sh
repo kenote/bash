@@ -51,7 +51,7 @@ get_pid() {
 
 # 获取名称
 get_name() {
-  echo $1 | sed -E "s/\.conf(\.bak)?$//" | sed -E "s/^\[[0-9a-z]{1,2}\]//"
+  echo $1 | sed -E "s/\.(conf|hash)(\.bak)?$//" | sed -E "s/^\[[0-9a-z]{1,2}\]//"
 }
 
 # 创建站点配置
@@ -263,6 +263,14 @@ server_options() {
     echo "签发免费证书"
     echo "------------------------"
     echo
+    if [[ -n $(get_info_node $file server_name | grep "localhost") ]]; then
+      echo -e "- ${yellow}绑定域名中存在本地配置，无法签发证书${plain}"
+      echo
+      read -n1 -p "按任意键继续" key
+      clear
+      server_options $1 $2
+      return
+    fi
     confirm "确定要签发免费证书吗?" "n"
     if [[ $? == 1 ]]; then
       clear

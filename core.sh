@@ -186,6 +186,18 @@ is_email() {
   echo "$1" | gawk '/^([a-zA-Z0-9_\-\.\+]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/{print $0}'
 }
 
+# 判断网络地址端口
+is_webadress() {
+  if [[ $(echo "$1" | grep -c ":") != 1 ]]; then
+    return
+  fi
+  if [[ -n $(is_ipadress $(echo "$1" | awk -F ":" '{print $1}')) ]]; then
+    if [[ -n $(is_port $(echo "$1" | awk -F ":" '{print $2}')) ]]; then
+      echo "$1"
+    fi
+  fi
+}
+
 # 转换磁盘大小
 to_size() {
   if [[ ! -n $(echo "$1" | gawk '/^[1-9]{1}[0-9]+?/{print $0}') ]]; then

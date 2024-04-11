@@ -4,6 +4,7 @@ source $(cd $(dirname $0);pwd)/cert/acme.sh
 source $(cd $(dirname $0);pwd)/nginx/init.sh
 source $(cd $(dirname $0);pwd)/nginx/server.sh
 source $(cd $(dirname $0);pwd)/nginx/proxy.sh
+source $(cd $(dirname $0);pwd)/nginx/upstream.sh
 
 
 show_menu() {
@@ -13,8 +14,8 @@ show_menu() {
     echo "------------------------"
     echo "1. 添加站点"
     echo "2. 管理站点"
-    # echo "3. 添加负载均衡"
-    # echo "4. 管理负载均衡"
+    echo "3. 添加负载均衡"
+    echo "4. 管理负载均衡"
     # echo "5. 添加端口转发"
     # echo "6. 管理端口转发"
     echo "------------------------"
@@ -151,6 +152,86 @@ show_menu() {
     echo
     
     server_options "$(ls $CONFDIR | grep -E "^(\[[0-9]{2}\])?$name\.conf(\.bak)?$")" 2
+
+    echo
+    read -n1 -p "按任意键继续" key
+    clear
+    show_menu
+  ;;
+  3)
+    clear
+    is_nginx_env
+    get_nginx_env
+    sub_title="添加负载均衡\n------------------------"
+    echo -e $sub_title
+    while read -p "名称: " name
+    do
+      goback $name "clear;show_menu"
+      if [[ ! -n $name ]]; then
+        warning "请填写名称" "$sub_title"
+        continue
+      fi
+      if [[ ! -n $(echo "$name" | gawk '/([a-zA-Z0-9_]+)$/{print $0}') ]]; then
+        warning "名称请用英文字母数字下划线组成" "$sub_title"
+        continue
+      fi
+      break
+    done
+    sub_title="$sub_title\n名称: $name"
+    clear && echo -e $sub_title
+    while read -p "服务器: " server
+    do
+      goback $server "clear;show_menu"
+      if [[ ! -n $server ]]; then
+        warning "请填写服务器" "$sub_title"
+        continue
+      fi
+      if [[ ! -n $(is_webadress "$server") ]]; then
+        warning "服务器地址格式错误，请正确写<IP:PORT>" "$sub_title"
+        continue
+      fi
+      break
+    done
+    sub_title="$sub_title\n服务器: $server"
+    clear && echo -e $sub_title
+    echo
+    create_upstream --name "$name" --server "$server"
+    echo
+    echo -e "- ${yellow}站点配置已添加${plain}"
+    echo
+    read -n1 -p "按任意键继续" key
+    clear
+    show_menu
+  ;;
+  4)
+    clear
+    is_nginx_env
+    echo "管理负载均衡"
+    echo "------------------------"
+    echo
+    get_nginx_env
+    get_upstream_list
+    echo
+    if [[ -n $3 ]]; then
+      echo -e "${red}$3${plain}"
+      echo
+    fi
+    while read -p "输入名称: " name
+    do
+      goback $name "clear;show_menu" "show_menu \"\" 4"
+      if [[ ! -n $name ]]; then
+        show_menu "" 4 "请输入名称"
+        continue
+      fi
+      if [[ ! -n $(ls $WORKDIR/upstream | grep -E "^(\[[0-9]{2}\])?$name\.(conf|hash)(\.bak)?$") ]]; then
+        show_menu "" 4 "输入的名称不存在"
+        continue
+      fi
+      break
+    done
+    echo
+
+    upstream_options "$(ls $WORKDIR/upstream | grep -E "^(\[[0-9]{2}\])?$name\.(conf|hash)(\.bak)?$")" 4
 
     echo
     read -n1 -p "按任意键继续" key
