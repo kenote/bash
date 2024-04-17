@@ -105,11 +105,3 @@ is_nginx_env() {
     return
   fi
 }
-
-# 
-read_nginx_env() {
-  
-  nginx -v
-  echo
-  NGINX_STATUS=`systemctl status nginx | grep "active" | cut -d '(' -f2|cut -d ')' -f1`
-}

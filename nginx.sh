@@ -421,6 +421,10 @@ show_menu() {
     echo "------------------------"
     echo
     is_nginx_env
+    nginx -v
+    echo
+    echo "-- $(systemctl status nginx | grep "active" | cut -d '(' -f2|cut -d ')' -f1) --"
+    echo
     nginx -t
     echo
     read -n1 -p "按任意键继续" key
