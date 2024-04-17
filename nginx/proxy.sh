@@ -61,7 +61,8 @@ set_http_setting() {
   fi
   proxydir="$WORKDIR/proxy/$server"
   mkdir -p $proxydir
-  wget --no-check-certificate -qO "$proxydir/[00]setting.conf" $KENOTE_BASH_MIRROR/nginx/conf/setting.conf
+  echo "# 附加参数" > $proxydir/[00]setting.conf
+  vi $proxydir/[00]setting.conf
   unset proxydir server
 }
 

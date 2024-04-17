@@ -218,16 +218,16 @@ server_options() {
     clear
     echo "设置附加参数"
     echo "------------------------"
+    echo "加载中..."
     echo
-    echo "功能暂停"
-    echo
-    read -n1 -p "按任意键继续" key
-    # filename=`ls $WORKDIR/proxy/$(get_name $1) | grep -E "^(\[[0-9]{1,2}\])?setting\.conf(\.bak)?$"`
-    # if [[ -n $filename && -f $WORKDIR/proxy/$(get_name $1)/$filename ]]; then
-    #   vi $WORKDIR/proxy/$(get_name $1)/$filename
-    # else
-    #   set_http_setting --server "$(get_name $1)"
-    # fi
+    sleep 3
+    filename=`ls $WORKDIR/proxy/$(get_name $1) | grep -E "^(\[[0-9]{1,2}\])?setting\.conf(\.bak)?$"`
+    if [[ -n $filename ]]; then
+      vi $WORKDIR/proxy/$(get_name $1)/$filename
+      unset filename
+    else
+      set_http_setting --server "$(get_name $1)"
+    fi
     clear
     server_options $1 $2
   ;;
