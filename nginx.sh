@@ -4,6 +4,7 @@ source $(cd $(dirname $0);pwd)/cert/acme.sh
 source $(cd $(dirname $0);pwd)/nginx/init.sh
 source $(cd $(dirname $0);pwd)/nginx/server.sh
 source $(cd $(dirname $0);pwd)/nginx/proxy.sh
+source $(cd $(dirname $0);pwd)/nginx/stream.sh
 source $(cd $(dirname $0);pwd)/nginx/upstream.sh
 
 
@@ -16,12 +17,14 @@ show_menu() {
     echo "2. 管理站点"
     echo "3. 添加负载均衡"
     echo "4. 管理负载均衡"
-    # echo "5. 添加端口转发"
-    # echo "6. 管理端口转发"
+    echo "5. 添加TCP转发"
+    echo "6. 添加UDP转发"
+    echo "7. 管理端口转发"
     echo "------------------------"
     echo "11. 启动服务"
     echo "12. 停止服务"
     echo "13. 重启服务"
+    echo "14. 检测配置"
     echo "------------------------"
     echo "00. 安装nginx"
     echo "99. 卸载nginx"
@@ -238,6 +241,143 @@ show_menu() {
     clear
     show_menu
   ;;
+  5|6)
+    clear
+    is_nginx_env
+    get_nginx_env
+    case $choice in
+    5)
+      sub_title="添加TCP转发\n------------------------"
+      udp_mode=""
+    ;;
+    6)
+      sub_title="添加UDP转发\n------------------------"
+      udp_mode="true"
+    ;;
+    esac
+    echo -e $sub_title
+
+    echo
+    while read -p "转发端口: " port
+    do
+      goback $port "clear;show_menu"
+      if [[ ! -n $port ]]; then
+        warning "请填写转发端口" "$sub_title"
+        continue
+      fi
+      if [[ ! -n $(is_port "$port") ]]; then
+        warning "请填写正确的端口" "$sub_title"
+        continue
+      fi
+      break
+    done
+    sub_title="$sub_title\n转发端口: $port"
+    clear && echo -e $sub_title
+    while read -p "代理地址: " proxy_pass
+    do
+      goback $proxy_pass "clear;show_menu"
+      if [[ ! -n $proxy_pass ]]; then
+        warning "请填写代理地址" "$sub_title"
+        continue
+      fi
+      if [[ -n $(echo "$proxy_pass" | grep ":") ]]; then
+        if [[ ! -n $(is_webadress "$proxy_pass") ]]; then
+          warning "代理地址格式错误，请填写<IP:PORT>或负载均衡名称" "$sub_title"
+          continue
+        fi
+      else
+        if [[ ! -n $(echo "$proxy_pass" | gawk '/([a-zA-Z0-9_\-\.]+)$/{print $0}') ]]; then
+          warning "代理地址格式错误，请填写<IP:PORT>或负载均衡名称" "$sub_title"
+          continue
+        fi
+      fi
+      break
+    done
+    sub_title="$sub_title\n代理地址: $proxy_pass"
+    clear && echo -e $sub_title
+    while read -p "响应超时: " timeout
+    do
+      goback $timeout "clear;show_menu"
+      if [[ -n $timeout && ! -n $(echo "$timeout" | gawk '/^[1-9]{1}[0-9]{1,2}?$/{print $0}') ]]; then
+        warning "响应超时时间必须是1-999的数字" "$sub_title"
+        continue
+      fi
+      break
+    done
+    sub_title="$sub_title\n响应超时: $timeout"
+    clear && echo -e $sub_title
+    while read -p "连接超时: " connect_timeout
+    do
+      goback $connect_timeout "clear;show_menu"
+      if [[ -n $connect_timeout && ! -n $(echo "$connect_timeout" | gawk '/^[1-9]{1}[0-9]{1,2}?$/{print $0}') ]]; then
+        warning "连接超时时间必须是1-999的数字" "$sub_title"
+        continue
+      fi
+      break
+    done
+    sub_title="$sub_title\n连接超时: $connect_timeout"
+    clear && echo -e $sub_title
+    while read -p "配置命名: " name
+    do 
+      goback $name "clear;show_menu"
+      if [[ ! -n $name ]]; then
+        warning "请为配置命名" "$sub_title"
+        continue
+      fi
+      if [[ ! -n $(echo "$name" | gawk '/([a-zA-Z0-9_\-\.]+)$/{print $0}') ]]; then
+        warning "命名请用英文字母数字下划线中划线组成" "$sub_title"
+        continue
+      fi
+      if [[ -n $(ls $WORKDIR/stream/conf | grep -E "^(\[[0-9]{2}\])?$name\.conf(\.bak)?$") ]]; then
+        warning "命名名称已存在" "$sub_title"
+        continue
+      fi
+      break
+    done
+    sub_title="$sub_title\n配置命名: $name"
+    clear && echo -e $sub_title
+    echo
+    create_stream --name "$name" --port "$port" --proxy_pass "$proxy_pass" --timeout "$timeout" --connect_timeout "$connect_timeout" --udp "$udp_mode"
+    echo
+    read -n1 -p "按任意键继续" key
+    clear
+    show_menu
+  ;;
+  7)
+    clear
+    is_nginx_env
+    echo "管理端口转发"
+    echo "------------------------"
+    echo
+    get_nginx_env
+    get_stream_list
+    echo
+    if [[ -n $3 ]]; then
+      echo -e "${red}$3${plain}"
+      echo
+    fi
+    while read -p "输入名称: " name
+    do
+      goback $name "clear;show_menu" "show_menu \"\" 7"
+      if [[ ! -n $name ]]; then
+        show_menu "" 7 "请输入名称"
+        continue
+      fi
+      if [[ ! -n $(ls $WORKDIR/stream/conf | grep -E "^(\[[0-9]{2}\])?$name\.conf(\.bak)?$") ]]; then
+        show_menu "" 7 "输入的名称不存在"
+        continue
+      fi
+      break
+    done
+    echo
+    
+    stream_options "$(ls $WORKDIR/stream/conf | grep -E "^(\[[0-9]{2}\])?$name\.conf(\.bak)?$")" 7
+
+    echo
+    read -n1 -p "按任意键继续" key
+    clear
+    show_menu
+  ;;
 
   11)
     clear
@@ -270,6 +410,18 @@ show_menu() {
     is_nginx_env
     systemctl restart nginx
     systemctl status nginx
+    echo
+    read -n1 -p "按任意键继续" key
+    clear
+    show_menu
+  ;;
+  14)
+    clear
+    echo "检测配置"
+    echo "------------------------"
+    echo
+    is_nginx_env
+    nginx -t
     echo
     read -n1 -p "按任意键继续" key
     clear

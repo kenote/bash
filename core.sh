@@ -95,6 +95,27 @@ confirm() {
   fi
 }
 
+# 选择可选值
+switch_value() {
+  if [[ -n $2 ]]; then
+    clear
+    echo -e $2
+  fi
+  i=0
+  for name in $(echo $1)
+  do
+    echo "$((i+1)). $name"
+    i=$((i+1))
+  done
+  unset name i
+  echo
+  read -p "请输入选择: " value
+  goback $value "$3"
+  if [[ ! -n $value && -n $(echo $1 | awk -F " " "{print \$$value}") ]]; then
+    switch_value "$1" "$2" "$3"
+  fi
+}
+
 # 显示标题
 show_title() {
   echo -e "${green}_  _ ____ _  _ ____ ___ ____  "

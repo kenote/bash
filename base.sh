@@ -444,6 +444,7 @@ case $1 in
     wget -O ~/kenote/nginx/server.sh $KENOTE_BASH_MIRROR/nginx/server.sh
     wget -O ~/kenote/nginx/proxy.sh $KENOTE_BASH_MIRROR/nginx/proxy.sh
     wget -O ~/kenote/nginx/upstream.sh $KENOTE_BASH_MIRROR/nginx/upstream.sh
+    wget -O ~/kenote/nginx/stream.sh $KENOTE_BASH_MIRROR/nginx/stream.sh
     wget -O ~/kenote/nginx.sh $KENOTE_BASH_MIRROR/nginx.sh
     chmod +x ~/kenote/nginx.sh
   ;;
