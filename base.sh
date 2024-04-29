@@ -456,7 +456,7 @@ case $1 in
   ;;
   user)
     mkdir -p ~/kenote/system
-    wget -O ~/kenote/system/base.sh $KENOTE_BASH_MIRROR/system/user.sh
+    wget -O ~/kenote/system/user.sh $KENOTE_BASH_MIRROR/system/user.sh
     wget -O ~/kenote/user.sh $KENOTE_BASH_MIRROR/user.sh
     chmod +x ~/kenote/user.sh
   ;;
