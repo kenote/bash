@@ -169,11 +169,11 @@ show_menu() {
     do
       goback $size "clear;show_menu"
       if [[ ! -n $size ]]; then
-        show_menu "" 4 "请填写交换分区大小"
+        show_menu "" 5 "请填写交换分区大小"
         continue
       fi
       if [[ ! -n $(echo "$size" | gawk '/^[1-9]{1}[0-9]+?/{print $0}') ]]; then
-        show_menu "" 4 "请正确填写分区大小"
+        show_menu "" 5 "请正确填写分区大小"
         continue
       fi
       break
