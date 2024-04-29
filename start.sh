@@ -68,16 +68,13 @@ linux_menu() {
   echo "------------------------"
   echo "1. 系统信息"
   echo "2. 进程监控"
-  echo "3. 磁盘管理 >"
-  # echo "5. 探针测试 >"
-  # echo "6. 用户管理 >"
+  echo "3. 系统设置 >"
+  echo "4. 磁盘管理 >"
+  echo "5. 账号管理 >"
   echo "------------------------"
-  # echo "11. Docker管理 >"
   echo "12. Nginx管理 >"
   echo "13. 服务器管理 >"
   echo "14. 证书管理 >"
-  # echo "14. 防火墙 >"
-  # echo "15. 应用中心 >"
   echo "------------------------"
   echo "00. 脚本更新"
   echo "------------------------"
@@ -107,16 +104,28 @@ linux_menu() {
     show_menu
   ;;
   3)
+    clear
+    run_script sett.sh
+  ;;
+  4)
+    clear
     run_script disk.sh
+  ;;
+  5)
+    clear
+    run_script user.sh
   ;;
 
   12)
+    clear
     run_script nginx.sh
   ;;
   13)
+    clear
     run_script ssh.sh
   ;;
   14)
+    clear
     run_script cert.sh
   ;;
   00)
@@ -138,28 +147,14 @@ linux_menu() {
 
 
 case "$1" in
---disk)
-  if (uname -s | grep -i -q "darwin"); then
-    clear && show_menu
-  else
-    run_script disk.sh
-  fi
-;;
 --ssh)
-  run_script ssh.sh
+  run_script $(echo $1 | sed 's/--//').sh
 ;;
---cert)
+--sett|--disk|--cert|--nginx|--user)
   if (uname -s | grep -i -q "darwin"); then
     clear && show_menu
   else
-    run_script cert.sh
-  fi
-;;
---nginx)
-  if (uname -s | grep -i -q "darwin"); then
-    clear && show_menu
-  else
-    run_script nginx.sh
+    run_script $(echo $1 | sed 's/--//').sh
   fi
 ;;
 *)

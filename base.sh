@@ -7,7 +7,7 @@ KENOTE_ACMECTL=$HOME/.acme.sh/acme.sh
 KENOTE_SSL_PATH=/mnt/ssl
 KENOTE_NGINX_HOME=/mnt/nginx-data
 
-PKGTABS="subversion |svn|\nxfsprogs |xfs_growfs|\njava-1.8.0-openjdk |keytool|"
+PKGTABS="subversion |svn|\nxfsprogs |xfs_growfs|\njava-1.8.0-openjdk |keytool|\nchrony |chronyd|"
 
 install_mac() {
   if (arch | grep -i -q "arm64"); then
@@ -447,6 +447,18 @@ case $1 in
     wget -O ~/kenote/nginx/stream.sh $KENOTE_BASH_MIRROR/nginx/stream.sh
     wget -O ~/kenote/nginx.sh $KENOTE_BASH_MIRROR/nginx.sh
     chmod +x ~/kenote/nginx.sh
+  ;;
+  sett)
+    mkdir -p ~/kenote/system
+    wget -O ~/kenote/system/base.sh $KENOTE_BASH_MIRROR/system/base.sh
+    wget -O ~/kenote/sett.sh $KENOTE_BASH_MIRROR/sett.sh
+    chmod +x ~/kenote/sett.sh
+  ;;
+  user)
+    mkdir -p ~/kenote/system
+    wget -O ~/kenote/system/base.sh $KENOTE_BASH_MIRROR/system/user.sh
+    wget -O ~/kenote/user.sh $KENOTE_BASH_MIRROR/user.sh
+    chmod +x ~/kenote/user.sh
   ;;
   *)
     init_sys
