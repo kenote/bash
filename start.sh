@@ -71,6 +71,7 @@ linux_menu() {
   echo "3. 系统设置 >"
   echo "4. 磁盘管理 >"
   echo "5. 账号管理 >"
+  echo "6. 定时任务 >"
   echo "------------------------"
   echo "12. Nginx管理 >"
   echo "13. 服务器管理 >"
@@ -115,6 +116,10 @@ linux_menu() {
     clear
     run_script user.sh
   ;;
+  6)
+    clear
+    run_script cron.sh
+  ;;
 
   12)
     clear
@@ -150,7 +155,7 @@ case "$1" in
 --ssh)
   run_script $(echo $1 | sed 's/--//').sh
 ;;
---sett|--disk|--cert|--nginx|--user)
+--sett|--disk|--cert|--nginx|--user|--cron)
   if (uname -s | grep -i -q "darwin"); then
     clear && show_menu
   else

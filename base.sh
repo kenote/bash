@@ -460,6 +460,10 @@ case $1 in
     wget -O ~/kenote/user.sh $KENOTE_BASH_MIRROR/user.sh
     chmod +x ~/kenote/user.sh
   ;;
+  cron)
+    wget -O ~/kenote/cron.sh $KENOTE_BASH_MIRROR/cron.sh
+    chmod +x ~/kenote/cron.sh
+  ;;
   *)
     init_sys
   ;;
