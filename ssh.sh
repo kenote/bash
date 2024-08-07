@@ -210,7 +210,11 @@ show_menu() {
     show_menu
   ;;
   0)
-    run_script start.sh
+    if (uname -s | grep -i -q "darwin"); then
+      clear && exit 0
+    else
+      run_script start.sh
+    fi
   ;;
   *)
     clear

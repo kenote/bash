@@ -65,17 +65,32 @@ goback() {
 
 # 警告提示
 warning() {
-  if [[ -n $2 ]]; then
+  if [[ -n $2 || -n $3 ]]; then
     clear
-    echo -e $2
+    if [[ -n $2 ]]; then
+      echo -e $2
+    fi
     if [[ -n $3 ]]; then
-      echo
+      if [[ -n $2 ]]; then
+        echo
+      fi
       eval "$3"
       echo
     fi
   fi
   echo -e "${red}$1${plain}"
   echo
+}
+
+# 获取子栏目头信息
+get_sub_note() {
+  echo $1
+  echo "------------------------"
+  if [[ -n $2 ]]; then
+    echo
+    eval "$2"
+    echo
+  fi
 }
 
 # 确认对话
