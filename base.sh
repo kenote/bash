@@ -6,6 +6,7 @@ KENOTE_SSH_PATH=$HOME/kenote_ssh
 KENOTE_ACMECTL=$HOME/.acme.sh/acme.sh
 KENOTE_SSL_PATH=/mnt/ssl
 KENOTE_NGINX_HOME=/mnt/nginx-data
+KENOTE_DOCKER_HOME=/mnt/docker-data
 
 PKGTABS="subversion |svn|\nxfsprogs |xfs_growfs|\njava-1.8.0-openjdk |keytool|\nchrony |chronyd|"
 
@@ -311,6 +312,7 @@ init_sys() {
   set_env KENOTE_ACMECTL $KENOTE_ACMECTL
   set_env KENOTE_SSL_PATH $KENOTE_SSL_PATH
   set_env KENOTE_NGINX_HOME $KENOTE_NGINX_HOME
+  set_env KENOTE_DOCKER_HOME $KENOTE_DOCKER_HOME
 }
 
 # 安装Homebrew
@@ -481,5 +483,6 @@ case $1 in
   echo "KENOTE_ACMECTL=$KENOTE_ACMECTL"
   echo "KENOTE_SSL_PATH=$KENOTE_SSL_PATH"
   echo "KENOTE_NGINX_HOME=$KENOTE_NGINX_HOME"
+  echo "KENOTE_DOCKER_HOME=$KENOTE_DOCKER_HOME"
 ;;
 esac

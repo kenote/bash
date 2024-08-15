@@ -10,6 +10,7 @@ KENOTE_SSH_PATH=$(curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --env KENO
 KENOTE_ACMECTL=$(curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --env KENOTE_ACMECTL)
 KENOTE_SSL_PATH=$(curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --env KENOTE_SSL_PATH)
 KENOTE_NGINX_HOME=$(curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --env KENOTE_NGINX_HOME)
+KENOTE_DOCKER_HOME=$(curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --env KENOTE_DOCKER_HOME)
 
 red='\033[0;31m'
 green='\033[0;32m'
