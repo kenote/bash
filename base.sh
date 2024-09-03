@@ -396,9 +396,9 @@ case $1 in
       echo "--------------------------------------------------"
   
     fi
-    echo "运 营 商: " $(curl -s ipinfo.io/org)
-    echo "所在地区: " $(curl -s ipinfo.io/country)
-    echo "所在城镇: " $(curl -s ipinfo.io/city)
+    echo "运 营 商: " $(curl -s https://ipinfo.io/org)
+    echo "所在地区: " $(curl -s https://ipinfo.io/country)
+    echo "所在城镇: " $(curl -s https://ipinfo.io/city)
     echo "--------------------------------------------------"
     echo "公 网 IP: " $(curl -s ipv4.ip.sb)
     echo "内 网 IP: " $(get_info ip)

@@ -29,7 +29,7 @@ server_list() {
         time="--"
       fi
     fi
-    ipinfo=`curl -s ipinfo.io/$host`
+    ipinfo=`curl -s https://ipinfo.io/$host`
     region=`echo $ipinfo | jq -r ".region" | sed 's/null/--/'`
     city=`echo $ipinfo | jq -r ".city" | sed 's/null/--/'`
     country=`echo $ipinfo | jq -r ".country" | sed 's/null/--/'`
@@ -182,7 +182,7 @@ server_options() {
   else
     echo -e "状态: ${red}离线${plain}"
   fi
-  ipinfo=`curl -s ipinfo.io/$host`
+  ipinfo=`curl -s https://ipinfo.io/$host`
   if (echo $ipinfo | jq -r ".country" | grep -v "null" &> /dev/null); then
     echo "国家: $(echo $ipinfo | jq -r ".country")"
   fi
