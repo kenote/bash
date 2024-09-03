@@ -5,6 +5,7 @@ source $(cd $(dirname $0);pwd)/docker/container.sh
 source $(cd $(dirname $0);pwd)/docker/image.sh
 source $(cd $(dirname $0);pwd)/docker/volume.sh
 source $(cd $(dirname $0);pwd)/docker/network.sh
+source $(cd $(dirname $0);pwd)/docker/compose.sh
 
 show_menu() {
   choice=$2
@@ -15,7 +16,7 @@ show_menu() {
     echo "2. 镜像管理"
     echo "3. 数据卷管理"
     echo "4. 网络管理"
-    echo "5. Stack管理"
+    echo "5. Compose项目"
     echo "------------------------"
     echo "11. 启动服务"
     echo "12. 停止服务"
@@ -37,7 +38,13 @@ show_menu() {
   fi
 
   case $choice in
-
+  1)
+    clear
+    is_docker_env
+    container_options
+    clear
+    show_menu
+  ;;
   2)
     clear
     is_docker_env
@@ -56,6 +63,13 @@ show_menu() {
     clear
     is_docker_env
     network_options
+    clear
+    show_menu
+  ;;
+  5)
+    clear
+    is_docker_env
+    compose_options
     clear
     show_menu
   ;;
@@ -170,6 +184,13 @@ show_menu() {
   esac
 }
 
-clear
-init_docker $KENOTE_DOCKER_HOME
-show_menu
+case $1 in
+--del-task)
+  del_task $2
+;;
+*)
+  clear
+  init_docker $KENOTE_DOCKER_HOME
+  show_menu
+;;
+esac

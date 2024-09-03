@@ -76,6 +76,7 @@ linux_menu() {
   echo "12. Nginx管理 >"
   echo "13. 服务器管理 >"
   echo "14. 证书管理 >"
+  echo "15. Docker管理 >"
   echo "------------------------"
   echo "00. 脚本更新"
   echo "------------------------"
@@ -133,6 +134,10 @@ linux_menu() {
     clear
     run_script cert.sh
   ;;
+  15)
+    clear
+    run_script docker.sh
+  ;;
   00)
     clear
     rm -rf ~/kenote/*
@@ -155,7 +160,7 @@ case "$1" in
 --ssh)
   run_script $(echo $1 | sed 's/--//').sh
 ;;
---sett|--disk|--cert|--nginx|--user|--cron)
+--sett|--disk|--cert|--nginx|--user|--cron|--docker)
   if (uname -s | grep -i -q "darwin"); then
     clear && show_menu
   else
