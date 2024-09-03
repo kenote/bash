@@ -466,6 +466,17 @@ case $1 in
     wget -O ~/kenote/cron.sh $KENOTE_BASH_MIRROR/cron.sh
     chmod +x ~/kenote/cron.sh
   ;;
+  docker)
+    mkdir -p ~/kenote/docker
+    wget -O ~/kenote/docker/init.sh $KENOTE_BASH_MIRROR/docker/init.sh
+    wget -O ~/kenote/docker/image.sh $KENOTE_BASH_MIRROR/docker/image.sh
+    wget -O ~/kenote/docker/network.sh $KENOTE_BASH_MIRROR/docker/network.sh
+    wget -O ~/kenote/docker/volume.sh $KENOTE_BASH_MIRROR/docker/volume.sh
+    wget -O ~/kenote/docker/container.sh $KENOTE_BASH_MIRROR/docker/container.sh
+    wget -O ~/kenote/docker/compose.sh $KENOTE_BASH_MIRROR/docker/compose.sh
+    wget -O ~/kenote/docker.sh $KENOTE_BASH_MIRROR/docker.sh
+    chmod +x ~/kenote/docker.sh
+  ;;
   *)
     init_sys
   ;;
