@@ -2,6 +2,9 @@
 
 init_docker() {
   mkdir -p $1/{stack,snapshot,image,volume}
+  if [[ ! -f /etc/docker/daemon.json ]]; then
+    wget -O /etc/docker/daemon.json $KENOTE_BASH_MIRROR/docker/conf/daemon.json
+  fi
 }
 
 # 安装 docker
@@ -16,6 +19,7 @@ install_docker() {
   else
     curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
   fi
+  init_docker $KENOTE_DOCKER_HOME
   docker --version
   systemctl start docker
   systemctl enable docker
@@ -38,6 +42,7 @@ is_docker_env() {
     show_menu
     return
   fi
+  init_docker $KENOTE_DOCKER_HOME
 }
 
 

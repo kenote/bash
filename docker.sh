@@ -190,7 +190,6 @@ case $1 in
 ;;
 *)
   clear
-  init_docker $KENOTE_DOCKER_HOME
   show_menu
 ;;
 esac
