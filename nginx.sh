@@ -20,11 +20,14 @@ show_menu() {
     echo "5. 添加TCP转发"
     echo "6. 添加UDP转发"
     echo "7. 管理端口转发"
+    echo "8. 绑定xray自动转发"
     echo "------------------------"
     echo "11. 启动服务"
     echo "12. 停止服务"
     echo "13. 重启服务"
     echo "14. 检测配置"
+    echo "15. 启动xray自动转发"
+    echo "16. 关闭xray自动转发"
     echo "------------------------"
     echo "00. 安装nginx"
     echo "99. 卸载nginx"
@@ -378,6 +381,48 @@ show_menu() {
     clear
     show_menu
   ;;
+  8)
+    clear
+    is_nginx_env
+    echo "绑定xray自动转发"
+    echo "------------------------"
+    echo
+    get_nginx_env
+    get_server_list
+    echo
+    if [[ -n $3 ]]; then
+      echo -e "${red}$3${plain}"
+      echo
+    fi
+    while read -p "输入名称: " name
+    do
+      goback $name "clear;show_menu" "show_menu \"\" 2"
+      if [[ ! -n $name ]]; then
+        show_menu "" 2 "请输入名称"
+        continue
+      fi
+      if [[ ! -n $(ls $CONFDIR | grep -E "^(\[[0-9]{2}\])?$name\.conf(\.bak)?$") ]]; then
+        show_menu "" 2 "输入的名称不存在"
+        continue
+      fi
+      break
+    done
+    echo
+    files=$(ls $CONFDIR | grep -E "*.conf(\.bak)?$")
+    for file in ${files[@]}
+    do
+      sed -i "/\*.inbound;/d" $CONFDIR/$file
+    done
+    sleep 3
+    filename=$(ls $CONFDIR | grep -E "^(\[[0-9]{2}\])?$name\.conf(\.bak)?$")
+    mkdir -p $WORKDIR/inbounds
+    sed -i "/*.conf;/a\    include $WORKDIR/inbounds/\*.inbound;" $CONFDIR/$filename
+    echo -e "xray自动转发已绑定到域名 -- $name"
+    echo
+    read -n1 -p "按任意键继续" key
+    clear
+    show_menu
+  ;;
 
   11)
     clear
@@ -426,6 +471,47 @@ show_menu() {
     echo "-- $(systemctl status nginx | grep "active" | cut -d '(' -f2|cut -d ')' -f1) --"
     echo
     nginx -t
+    echo
+    read -n1 -p "按任意键继续" key
+    clear
+    show_menu
+  ;;
+  15)
+    clear
+    is_nginx_env
+    echo "启动xray自动转发"
+    echo "------------------------"
+    echo
+    if [[ ! -n $(cat /etc/rc.d/rc.local | grep "inbound.sh") ]]; then
+      curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --init inbounds
+      echo "nohup sh $KENOTE_NGINX_HOME/inbound.sh>$KENOTE_NGINX_HOME/logs/inbounds/inbounds.txt 2>&1 &" >> /etc/rc.d/rc.local
+      chmod +x /etc/rc.d/rc.local
+      systemctl daemon-reload
+      systemctl enable rc-local.service
+      systemctl restart rc-local.service
+      echo
+    fi
+    echo -e "xray自动转发已启动"
+    echo
+    read -n1 -p "按任意键继续" key
+    clear
+    show_menu
+  ;;
+  16)
+    clear
+    is_nginx_env
+    echo "关闭xray自动转发"
+    echo "------------------------"
+    echo
+    if [[ -n $(cat /etc/rc.d/rc.local | grep "inbound.sh") ]]; then
+      sed -i "/inbound.sh/d" /etc/rc.d/rc.local
+      systemctl daemon-reload
+      systemctl restart rc-local.service
+      rm -rf $KENOTE_NGINX_HOME/inbounds/*
+      systemctl restart nginx
+      echo
+    fi
+    echo -e "xray自动转发已关闭"
     echo
     read -n1 -p "按任意键继续" key
     clear

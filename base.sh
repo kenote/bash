@@ -8,7 +8,7 @@ KENOTE_SSL_PATH=/mnt/ssl
 KENOTE_NGINX_HOME=/mnt/nginx-data
 KENOTE_DOCKER_HOME=/mnt/docker-data
 
-PKGTABS="subversion |svn|\nxfsprogs |xfs_growfs|\njava-1.8.0-openjdk |keytool|\nchrony |chronyd|"
+PKGTABS="subversion |svn|\nxfsprogs |xfs_growfs|\njava-1.8.0-openjdk |keytool|\nchrony |chronyd|\ninotify-tools |inotifywait|"
 
 install_mac() {
   if (arch | grep -i -q "arm64"); then
@@ -277,7 +277,7 @@ init_sys() {
     if !(command -v brew &> /dev/null); then
       install_brew
     fi
-    install git svn python3 jq bc unzip wget htop
+    install git svn python3 jq bc unzip wget htop yq
   else
     if (cat /etc/os-release | grep -q -E -i "debian"); then
       CODENAME=`cat /etc/os-release | grep "VERSION_CODENAME" | sed 's/\(.*\)=\(.*\)/\2/g'`
@@ -291,7 +291,7 @@ init_sys() {
     if !(command -v ifconfig &> /dev/null); then
       install net-tools
     fi
-    install sudo git svn python3 jq bc tar unzip wget htop
+    install sudo git svn python3 jq bc tar unzip wget htop dpkg yq inotifywait
   fi
   mkdir -p ~/kenote
   if [[ ! -n $KENOTE_BASH_MIRROR ]]; then
@@ -476,6 +476,10 @@ case $1 in
     wget -O ~/kenote/docker/compose.sh $KENOTE_BASH_MIRROR/docker/compose.sh
     wget -O ~/kenote/docker.sh $KENOTE_BASH_MIRROR/docker.sh
     chmod +x ~/kenote/docker.sh
+  ;;
+  inbounds)
+    wget -O $(get_env "KENOTE_NGINX_HOME")/inbound.sh $KENOTE_BASH_MIRROR/nginx/inbound.sh
+    chmod +x $(get_env "KENOTE_NGINX_HOME")/inbound.sh
   ;;
   *)
     init_sys
