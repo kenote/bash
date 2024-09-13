@@ -126,7 +126,8 @@ set_ssl_certificate() {
   domain=`get_info_node $file server_name | awk -F " " '{print $1}'`
   port=`get_info_node $file listen | sed -n 1p`
   echo "http://$domain:$port"
-  if !(curl -s -I http://$domain:$port | grep -i "^server:" | grep "1.25" &> /dev/null); then
+  local_version=$(curl -s -I http://$domain:$port | grep -i "^server:" | awk -F "/" '{print $2}')
+  if [[ ! -n $(printf '%s\n' "$local_version" "1.25" | sort -V | head -n1 | grep "1.25") ]]; then
     http2="http2"
   fi
   cp $file "$file.http"
@@ -177,7 +178,7 @@ set_ssl_certificate() {
   echo -e "    access_log $(get_info_node "$file.http" access_log);" >> $file
   echo -e "    error_log $(get_info_node "$file.http" error_log);" >> $file
   echo -e "}" >> $file
-  unset file domain port
+  unset file domain port local_version
 }
 
 # 站点选项
