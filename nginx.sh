@@ -417,6 +417,7 @@ show_menu() {
     filename=$(ls $CONFDIR | grep -E "^(\[[0-9]{2}\])?$name\.conf(\.bak)?$")
     mkdir -p $WORKDIR/inbounds
     sed -i "/*.conf;/a\    include $WORKDIR/inbounds/\*.inbound;" $CONFDIR/$filename
+    systemctl restart nginx
     echo -e "xray自动转发已绑定到域名 -- $name"
     echo
     read -n1 -p "按任意键继续" key
@@ -484,6 +485,7 @@ show_menu() {
     echo
     if [[ ! -n $(cat /etc/rc.d/rc.local | grep "inbound.sh") ]]; then
       curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --init inbounds
+      bash $KENOTE_NGINX_HOME/inbound.sh --init
       echo "nohup sh $KENOTE_NGINX_HOME/inbound.sh>$KENOTE_NGINX_HOME/logs/inbounds/inbounds.txt 2>&1 &" >> /etc/rc.d/rc.local
       chmod +x /etc/rc.d/rc.local
       systemctl daemon-reload

@@ -82,5 +82,11 @@ monitor_inbounds() {
 }
 
 get_nginx_env
-init_inbounds
-monitor_inbounds
+case "$1" in
+--init)
+  init_inbounds
+;;
+*)
+  monitor_inbounds
+;;
+esac

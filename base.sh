@@ -441,6 +441,7 @@ case $1 in
     mkdir -p ~/kenote/nginx
     wget -O ~/kenote/nginx/init.sh $KENOTE_BASH_MIRROR/nginx/init.sh
     if [[ ! -f ~/kenote/cert/acme.sh ]]; then
+      mkdir -p ~/kenote/cert
       wget -O ~/kenote/cert/acme.sh $KENOTE_BASH_MIRROR/cert/acme.sh
     fi
     wget -O ~/kenote/nginx/server.sh $KENOTE_BASH_MIRROR/nginx/server.sh
