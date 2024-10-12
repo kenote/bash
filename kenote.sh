@@ -32,8 +32,9 @@ update_yq() {
     if [[ -f $CURRENT_DIR/packages/yq/yq_linux_${item} && -n $(cat $CURRENT_DIR/packages/yq/latest.txt | grep -E -q "^$YQ_RELEASE$") ]]; then
       continue
     fi
-    wget --no-check-certificate -O $CURRENT_DIR/packages/yq/yq_linux_${item} https://github.com/mikefarah/yq/releases/download/$BTOP_RELEASE/yq_linux_${item}
+    wget --no-check-certificate -O $CURRENT_DIR/packages/yq/yq_linux_${item} https://github.com/mikefarah/yq/releases/download/$YQ_RELEASE/yq_linux_${item}
   done
+  echo "$YQ_RELEASE" > $CURRENT_DIR/packages/yq/latest.txt
 }
 
 update_bash() {
