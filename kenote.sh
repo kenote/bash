@@ -19,6 +19,23 @@ update_btop() {
   echo "$BTOP_RELEASE" > $CURRENT_DIR/packages/btop/latest.txt
 }
 
+update_yq() {
+  YQ_RELEASE=`curl -s https://api.github.com/repos/mikefarah/yq/releases/latest | jq -r ".tag_name"`
+  if [[ ! -n $YQ_RELEASE ]]; then
+    return
+  fi
+  mkdir -p $CURRENT_DIR/packages/yq
+  touch $CURRENT_DIR/packages/yq/latest.txt
+  list=(arm64 amd64)
+  for item in ${list[@]}
+  do
+    if [[ -f $CURRENT_DIR/packages/yq/yq_linux_${item} && -n $(cat $CURRENT_DIR/packages/yq/latest.txt | grep -E -q "^$YQ_RELEASE$") ]]; then
+      continue
+    fi
+    wget --no-check-certificate -O $CURRENT_DIR/packages/yq/yq_linux_${item} https://github.com/mikefarah/yq/releases/download/$BTOP_RELEASE/yq_linux_${item}
+  done
+}
+
 update_bash() {
   cd $CURRENT_DIR/kenote/bash
   git pull origin main
@@ -43,11 +60,15 @@ case $1 in
   git clone https://github.com/kenote/bash.git $MIRROR_PATH/kenote/bash
   # 更新 packages
   $MIRROR_PATH/kenote.sh --btop
+  $MIRROR_PATH/kenote.sh --yq
   # 添加计划任务
   $MIRROR_PATH/kenote.sh --cron
 ;;
 --btop)
   update_btop
+;;
+--yq)
+  update_yq
 ;;
 --cron)
   # 添加计划任务
@@ -66,5 +87,6 @@ case $1 in
   update_bash
   # 更新 packages
   update_btop
+  update_yq
 ;;
 esac
