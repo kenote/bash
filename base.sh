@@ -11,7 +11,7 @@ KENOTE_DOCKER_HOME=/mnt/docker-data
 PKGTABS="subversion |svn|\nxfsprogs |xfs_growfs|\njava-1.8.0-openjdk |keytool|\nchrony |chronyd|\ninotify-tools |inotifywait|"
 
 install_mac() {
-  if (arch | grep -i -q "arm64"); then
+  if (uname -a | grep -i -q "arm64"); then
     arch -arm64 brew install $1
   else
     brew install $1
@@ -19,6 +19,15 @@ install_mac() {
 }
 
 install_linux() {
+  if [[ $1 == 'yq' ]]; then
+    if (uname -a | grep -i -q "arm64"); then
+      wget $KENOTE_PACK_MIRROR/yq/yq_linux_arm64 -O /usr/bin/yq
+    else
+      wget $KENOTE_PACK_MIRROR/yq/yq_linux_amd64 -O /usr/bin/yq
+    fi
+    chmod +x /usr/bin/yq
+    return
+  fi
   if (command -v apt &> /dev/null); then
     apt update -y && apt install -y $1
   elif (command -v dnf &> /dev/null); then
@@ -33,6 +42,10 @@ install_linux() {
 }
 
 remove_linux() {
+  if [[ $1 == 'yq' ]]; then
+    rm -rf /usr/bin/yq
+    return
+  fi
   if (command -v apt &> /dev/null); then
     apt remove -y $1
   elif (command -v dnf &> /dev/null); then
