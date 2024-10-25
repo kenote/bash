@@ -1,40 +1,23 @@
 #! /bin/bash
 CURRENT_DIR=$(cd $(dirname $0);pwd)
 
-update_btop() {
-  BTOP_RELEASE=`curl -s https://api.github.com/repos/aristocratos/btop/releases/latest | jq -r ".tag_name"`
-  if [[ ! -n $BTOP_RELEASE ]]; then
+update_package() {
+  PKG_RELEASE=`curl -s https://api.github.com/repos/$1/releases/latest | jq -r ".tag_name"`
+  if [[ ! -n $PKG_RELEASE ]]; then
     return
   fi
-  mkdir -p $CURRENT_DIR/packages/btop
-  touch $CURRENT_DIR/packages/btop/latest.txt
-  list=(aarch64 x86_64)
-  for item in ${list[@]}
-  do
-    if [[ -f $CURRENT_DIR/packages/btop/btop-${item}-linux-musl.tbz && -n $(cat $CURRENT_DIR/packages/btop/latest.txt | grep -E -q "^$BTOP_RELEASE$") ]]; then
-      continue
-    fi
-    wget --no-check-certificate -O $CURRENT_DIR/packages/btop/btop-${item}-linux-musl.tbz https://github.com/aristocratos/btop/releases/download/$BTOP_RELEASE/btop-${item}-linux-musl.tbz
-  done
-  echo "$BTOP_RELEASE" > $CURRENT_DIR/packages/btop/latest.txt
-}
-
-update_yq() {
-  YQ_RELEASE=`curl -s https://api.github.com/repos/mikefarah/yq/releases/latest | jq -r ".tag_name"`
-  if [[ ! -n $YQ_RELEASE ]]; then
+  name=$(echo $1 | awk -F "/" '{print $2}')
+  mkdir -p $CURRENT_DIR/packages/$name
+  if [[ ! -f $CURRENT_DIR/packages/$name/latest.txt ]]; then
+    echo "0" > $CURRENT_DIR/packages/$name/latest.txt
+  elif [[ -n $(cat $CURRENT_DIR/packages/$name/latest.txt | grep -E "^$PKG_RELEASE$") ]]; then
     return
   fi
-  mkdir -p $CURRENT_DIR/packages/yq
-  touch $CURRENT_DIR/packages/yq/latest.txt
-  list=(arm64 amd64)
-  for item in ${list[@]}
+  for file in $(curl -s https://api.github.com/repos/$1/releases/latest | jq -r ".assets[] | .name" | grep -E "$2")
   do
-    if [[ -f $CURRENT_DIR/packages/yq/yq_linux_${item} && -n $(cat $CURRENT_DIR/packages/yq/latest.txt | grep -E -q "^$YQ_RELEASE$") ]]; then
-      continue
-    fi
-    wget --no-check-certificate -O $CURRENT_DIR/packages/yq/yq_linux_${item} https://github.com/mikefarah/yq/releases/download/$YQ_RELEASE/yq_linux_${item}
+    wget --no-check-certificate -O $CURRENT_DIR/packages/$name/$file https://github.com/$1/releases/download/$PKG_RELEASE/$file
   done
-  echo "$YQ_RELEASE" > $CURRENT_DIR/packages/yq/latest.txt
+  echo "$PKG_RELEASE" > $CURRENT_DIR/packages/$name/latest.txt
 }
 
 update_bash() {
@@ -60,16 +43,9 @@ case $1 in
   rm -rf $MIRROR_PATH/kenote/bash
   git clone https://github.com/kenote/bash.git $MIRROR_PATH/kenote/bash
   # 更新 packages
-  $MIRROR_PATH/kenote.sh --btop
-  $MIRROR_PATH/kenote.sh --yq
+  $MIRROR_PATH/kenote.sh --update
   # 添加计划任务
   $MIRROR_PATH/kenote.sh --cron
-;;
---btop)
-  update_btop
-;;
---yq)
-  update_yq
 ;;
 --cron)
   # 添加计划任务
@@ -87,7 +63,12 @@ case $1 in
   # 更新 kenote/bash
   update_bash
   # 更新 packages
-  update_btop
-  update_yq
+  if [[ ! -f $CURRENT_DIR/packages.ini ]]; then
+    echo -e "aristocratos/btop\nmikefarah/yq" > $MIRROR_PATH/packages.ini
+  fi
+  for name in $(cat $CURRENT_DIR/packages.ini)
+  do
+    update_package $name
+  done
 ;;
 esac
