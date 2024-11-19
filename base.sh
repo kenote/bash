@@ -251,6 +251,7 @@ get_info() {
     echo "UDP PORTS"
     echo "------------------------------------------"
     netstat -nupl
+    echo
   ;;
   esac
 }
