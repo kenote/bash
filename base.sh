@@ -243,6 +243,15 @@ get_info() {
       echo $(hostname) $(hostname -f)
     fi
   ;;
+  ports)
+    echo "TCP PORTS"
+    echo "------------------------------------------"
+    netstat -ntpl
+    echo
+    echo "UDP PORTS"
+    echo "------------------------------------------"
+    netstat -nupl
+  ;;
   esac
 }
 
