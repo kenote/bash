@@ -72,6 +72,7 @@ linux_menu() {
   echo "4. 磁盘管理 >"
   echo "5. 账号管理 >"
   echo "6. 定时任务 >"
+  echo "7. 查看端口信息"
   echo "------------------------"
   echo "12. Nginx管理 >"
   echo "13. 服务器管理 >"
@@ -120,6 +121,13 @@ linux_menu() {
   6)
     clear
     run_script cron.sh
+  ;;
+  7)
+    clear
+    curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --info ports
+    read -n1  -p "按任意键继续" key
+    clear
+    show_menu
   ;;
 
   12)
