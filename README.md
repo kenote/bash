@@ -13,13 +13,13 @@ Bash脚本工具 v.1.0
 Github
 ```bash
 curl -Lso- https://raw.githubusercontent.com/kenote/bash/main/base.sh | bash -s -- --mirror https://raw.githubusercontent.com/kenote/bash/main; \
-if (echo $SHELL | grep -q "zsh");then source ~/.zshrc; else source ~/.bash_profile; fi
+if (echo $SHELL | grep -q "zsh");then source ~/.zshrc; else source ~/.bashrc; fi
 ```
 
 Gitee
 ```bash
 curl -Lso- https://gitee.com/kenote/bash/raw/main/base.sh | bash -s -- --mirror https://gitee.com/kenote/bash/raw/main; \
-if (echo $SHELL | grep -q "zsh");then source ~/.zshrc; else source ~/.bash_profile; fi
+if (echo $SHELL | grep -q "zsh");then source ~/.zshrc; else source ~/.bashrc; fi
 ```
 
 ## Install 安装
@@ -37,7 +37,7 @@ curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --init
 设置热键
 ```bash
 curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --hotkey "kn"; \
-if (echo $SHELL | grep -q "zsh");then source ~/.zshrc; else source ~/.bash_profile; fi
+if (echo $SHELL | grep -q "zsh");then source ~/.zshrc; else source ~/.bashrc; fi
 ```
 
 ## 自定义源
