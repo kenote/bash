@@ -253,6 +253,13 @@ get_info() {
     netstat -nupl
     echo
   ;;
+  ssh_port)
+    if [[ -n $(grep -E '^Port [0-9]+' /etc/ssh/sshd_config | awk '{print $2}') ]]; then
+      echo $(grep -E '^Port [0-9]+' /etc/ssh/sshd_config | awk '{print $2}')
+    else
+      echo 22
+    fi
+  ;;
   esac
 }
 
@@ -314,7 +321,7 @@ init_sys() {
     if !(command -v ifconfig &> /dev/null); then
       install net-tools
     fi
-    install sudo git svn python3 jq bc tar unzip wget htop dpkg yq inotifywait
+    install sudo git svn python3 jq bc tar unzip wget htop dpkg yq inotifywait expect
   fi
   mkdir -p ~/kenote
   if [[ ! -n $KENOTE_BASH_MIRROR ]]; then
