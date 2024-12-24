@@ -512,6 +512,12 @@ case $1 in
     wget -O $(get_env "KENOTE_NGINX_HOME")/inbound.sh $KENOTE_BASH_MIRROR/nginx/inbound.sh
     chmod +x $(get_env "KENOTE_NGINX_HOME")/inbound.sh
   ;;
+  iptables)
+    mkdir -p ~/kenote/system
+    wget -O ~/kenote/system/iptables.sh $KENOTE_BASH_MIRROR/system/iptables.sh
+    wget -O ~/kenote/iptables.sh $KENOTE_BASH_MIRROR/iptables.sh
+    chmod +x ~/kenote/iptables.sh
+  ;;
   *)
     init_sys
   ;;
