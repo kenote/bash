@@ -2,7 +2,7 @@
 
 # 获取负载均衡列表
 get_upstream_list() {
-  list=`ls $WORKDIR/upstream | grep -E "*.(conf|hash)(\.bak)?$"`
+  list=`ls $WORKDIR/upstream | grep -E ".(conf|hash)(\.bak)?$"`
   printf "%-22s %-32s %-42s\n" "名称" "服务" "模式"
   echo "------------------------------------------------------------------------------"
   for file in ${list[@]}
@@ -329,7 +329,7 @@ upstream_options() {
     1|2|3|4)
       set_upstream_mode "$1" "${modelist[$((mod_choice-1))]}"
       clear
-      upstream_options $(ls $WORKDIR/upstream | grep -E "*.(conf|hash)(\.bak)?$") $2
+      upstream_options $(ls $WORKDIR/upstream | grep -E ".(conf|hash)(\.bak)?$") $2
     ;;
     *)
       clear

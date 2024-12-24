@@ -2,7 +2,7 @@
 
 # 获取端口转发列表
 get_stream_list() {
-  list=`ls $WORKDIR/stream/conf | grep -E "*.conf(\.bak)?$"`
+  list=`ls $WORKDIR/stream/conf | grep -E ".conf(\.bak)?$"`
   printf "%-10s %-20s %-20s %-30s %-10s\n" "PID" "NAME" "PORT" "PROXY" "TYPE"
   echo "-----------------------------------------------------------------------------------------------------------"
   for file in ${list[@]}

@@ -483,11 +483,16 @@ show_menu() {
     echo "启动xray自动转发"
     echo "------------------------"
     echo
-    if [[ ! -n $(cat /etc/rc.d/rc.local | grep "inbound.sh") ]]; then
+    if [[ ! -n $(find /etc -name "rc.local") ]]; then
+      echo -e "\#\!/bin/bash -e\n" | sed 's/\\//g' > /etc/rc.local
+      echo -e "" > /etc/rc.local
+    fi
+    rcfile=$(find /etc -name "rc.local" | tail -n1)
+    if [[ ! -n $(cat $rcfile | grep "inbound.sh") ]]; then
       curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --init inbounds
       bash $KENOTE_NGINX_HOME/inbound.sh --init
-      echo "nohup sh $KENOTE_NGINX_HOME/inbound.sh>$KENOTE_NGINX_HOME/logs/inbounds/inbounds.txt 2>&1 &" >> /etc/rc.d/rc.local
-      chmod +x /etc/rc.d/rc.local
+      echo "nohup bash $KENOTE_NGINX_HOME/inbound.sh>$KENOTE_NGINX_HOME/logs/inbounds/inbounds.txt 2>&1 &" >> $rcfile
+      chmod +x $rcfile
       systemctl daemon-reload
       systemctl enable rc-local.service
       systemctl restart rc-local.service

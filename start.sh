@@ -78,6 +78,7 @@ linux_menu() {
   echo "13. 服务器管理 >"
   echo "14. 证书管理 >"
   echo "15. Docker管理 >"
+  echo "16. 防火墙管理 >"
   echo "------------------------"
   echo "00. 脚本更新"
   echo "------------------------"
@@ -146,6 +147,10 @@ linux_menu() {
     clear
     run_script docker.sh
   ;;
+  15)
+    clear
+    run_script iptables.sh
+  ;;
   00)
     clear
     rm -rf ~/kenote/*
@@ -168,7 +173,7 @@ case "$1" in
 --ssh)
   run_script $(echo $1 | sed 's/--//').sh
 ;;
---sett|--disk|--cert|--nginx|--user|--cron|--docker)
+--sett|--disk|--cert|--nginx|--user|--cron|--docker|--iptables)
   if (uname -s | grep -i -q "darwin"); then
     clear && show_menu
   else
