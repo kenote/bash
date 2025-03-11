@@ -15,7 +15,7 @@ get_nginx_env() {
 
 # 安装 nginx
 install_nginx() {
-  if (cat /etc/os-release | grep -q -E -i "centos"); then
+  if (cat /etc/os-release | grep -q -E -i "centos|fedora"); then
     wget --no-check-certificate -qO /etc/yum.repos.d/nginx.repo $KENOTE_BASH_MIRROR/nginx/nginx.repo
   elif (cat /etc/os-release | grep -q -E -i "debian"); then
     sudo apt install -y curl gnupg2 ca-certificates lsb-release debian-archive-keyring

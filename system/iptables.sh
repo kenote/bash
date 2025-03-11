@@ -12,7 +12,7 @@ update_rules() {
 # 安装防火墙
 install_iptables() {
   ssh_port=$(curl -Lso- $KENOTE_BASH_MIRROR/base.sh | bash -s -- --info ssh_port)
-  if (cat /etc/os-release | grep -q -E -i "rocky|alma|rhel"); then
+  if (cat /etc/os-release | grep -q -E -i "rocky|alma|rhel|oracle"); then
     systemctl stop firewalld
     systemctl disable firewalld
     yum install -y iptables-services ipset-service
